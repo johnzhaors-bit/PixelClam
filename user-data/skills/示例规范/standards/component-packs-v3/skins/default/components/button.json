@@ -1,0 +1,20 @@
+{
+  "kind": "independent-component-audit-pack",
+  "version": "1.0.0",
+  "selfContained": true,
+  "skin": { "id": "default", "name": "通用浅色示例" },
+  "component": { "id": "button", "name": "Button", "displayName": "按钮" },
+  "scope": { "include": ["button", "[role=button]", "提交、确认、取消等可点击操作"], "exclude": ["纯文本链接"] },
+  "rules": {
+    "heightPx": { "normal": 32, "small": 24, "large": 40 },
+    "paddingXpx": { "normal": 16, "small": 8, "large": 20 },
+    "borderRadiusPx": 4,
+    "borderWidthPx": 1,
+    "fontSizePx": 14,
+    "groupGapPx": 8,
+    "primary": { "backgroundColor": "#1677ff", "textColor": "#ffffff" },
+    "default": { "backgroundColor": "#ffffff", "textColor": "#1f2329", "borderColor": "#d0d5dd" },
+    "disabled": { "opacity": 0.5, "mustNotAppearInteractive": true }
+  },
+  "comparisonPolicy": { "domTolerancePx": 1, "imageTolerancePx": 2, "maxIssuesPerInstance": 2 }
+}

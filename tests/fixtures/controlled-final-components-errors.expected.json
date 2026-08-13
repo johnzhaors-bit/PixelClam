@@ -1,0 +1,12 @@
+{
+  "fixture":"controlled-final-components-errors.html","skin":"default",
+  "expectedByRound":{
+    "tag-filtering":[{"id":"TAGF-HEIGHT","target":"#tag-filtering-bad","actual":"36px","expected":"28px"},{"id":"TAGF-RADIUS","target":"#tag-filtering-bad","actual":"4px","expected":"24px"}],
+    "template-query":[{"id":"TQUERY-PADDING","target":"#template-query-bad","actual":"2px","expected":"8px"},{"id":"TQUERY-RADIUS","target":"#template-query-bad","actual":"8px","expected":"3px"}],
+    "transfer":[{"id":"TRANSFER-ORDER","target":"#transfer-bad","actual":"目标-按钮-源","expected":"源-按钮-目标","mustContain":["源","目标"]},{"id":"TRANSFER-DISABLED","target":"#transfer-bad","actual":"无选择仍可用","expected":"禁用","mustContain":["禁用"]}],
+    "tree":[{"id":"TREE-HEIGHT","target":"#tree-bad","actual":"36px","expected":"24px"},{"id":"TREE-ICON","target":"#tree-bad","actual":"12px","expected":"16px"}],
+    "upload":[{"id":"UPLOAD-BOUNDARY","target":"#upload-bad","actual":"无边界","expected":"明确边界","mustContain":["边界"]},{"id":"UPLOAD-HINT","target":"#upload-bad","actual":"未显示PNG限制","expected":"显示限制说明","mustContain":["PNG"]}],
+    "wizard":[{"id":"WIZARD-COUNT","target":"#wizard-bad","actual":"2步","expected":"通常不少于三个步骤","mustContain":["三个"]},{"id":"WIZARD-CURRENT","target":"#wizard-bad","actual":"两个当前步骤","expected":"当前步骤唯一","mustContain":["唯一"]}]
+  },
+  "expectedCleanTargets":["#tag-filtering-clean","#template-query-clean","#transfer-clean","#tree-clean","#upload-clean","#wizard-clean"]
+}

@@ -1,0 +1,26 @@
+{
+  "fixture":"controlled-data-form-errors.html","skin":"default",
+  "expectedByRound":{
+    "donut-chart":[
+      {"id":"DONUT-CENTER","target":"#donut-chart-bad","actual":"80","expected":"100","mustContain":["中心","100"]},
+      {"id":"DONUT-LEGEND","target":"#donut-chart-bad","actual":"已使用图例为红色","expected":"与蓝色扇区对应","mustContain":["图例","扇区"]}
+    ],
+    "drag-handle":[
+      {"id":"HANDLE-WIDTH","target":"#drag-handle-bad","actual":"1px","expected":"4px"},
+      {"id":"HANDLE-CURSOR","target":"#drag-handle-bad","actual":"default","expected":"col-resize","mustContain":["col-resize"]}
+    ],
+    "form":[
+      {"id":"FORM-LABEL-HEIGHT","target":"#form-bad","actual":"40px","expected":"32px"},
+      {"id":"FORM-LABEL-PADDING","target":"#form-bad","actual":"4px","expected":"16px"}
+    ],
+    "form-x":[
+      {"id":"FORMX-LABEL-HEIGHT","target":"#form-x-bad","actual":"36px","expected":"32px"},
+      {"id":"FORMX-BUTTON-PADDING","target":"#form-x-bad","actual":"4px","expected":"16px"}
+    ],
+    "holiday-picker":[
+      {"id":"HOLIDAY-ORDER","target":"#holiday-picker-bad","actual":"节假日在年份之前","expected":"年份与节假日成组且年份在前","mustContain":["年份","节假日"]},
+      {"id":"HOLIDAY-TAG-DELETE","target":"#holiday-picker-bad","actual":"多选标签不可删除","expected":"可删除标签","mustContain":["删除","标签"]}
+    ]
+  },
+  "expectedCleanTargets":["#donut-chart-clean","#drag-handle-clean","#form-clean","#form-x-clean","#holiday-picker-clean"]
+}

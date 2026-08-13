@@ -1,0 +1,27 @@
+{
+  "fixture": "controlled-feedback-errors.html",
+  "skin": "default",
+  "expectedByRound": {
+    "tooltip": [
+      { "id": "TOOLTIP-HEIGHT", "target": "#tooltip-bad", "actual": "40px", "expected": "30px" },
+      { "id": "TOOLTIP-RADIUS", "target": "#tooltip-bad", "actual": "8px", "expected": "3px" }
+    ],
+    "badge": [
+      { "id": "BADGE-SIZE", "target": "#badge-bad", "actual": "14px", "expected": "8px" },
+      { "id": "BADGE-OFFSET", "target": "#badge-bad", "actual": "-8px", "expected": "-4px" }
+    ],
+    "status": [
+      { "id": "STATUS-SIZE", "target": "#status-bad", "actual": "16px", "expected": "10px" },
+      { "id": "STATUS-SUCCESS-COLOR", "target": "#status-bad", "actual": "#F54C4C", "expected": "#53BD73" }
+    ],
+    "progress": [
+      { "id": "PROGRESS-WIDTH", "target": "#progress-bad", "actual": "260px", "expected": "200px" },
+      { "id": "PROGRESS-HEIGHT", "target": "#progress-bad", "actual": "10px", "expected": "4px" }
+    ],
+    "slider": [
+      { "id": "SLIDER-TRACK", "target": "#slider-bad", "actual": "8px", "expected": "4px" },
+      { "id": "SLIDER-THUMB", "target": "#slider-bad", "actual": "20px", "expected": "14px" }
+    ]
+  },
+  "expectedCleanTargets": ["#tooltip-clean", "#badge-clean", "#status-clean", "#progress-clean", "#slider-clean"]
+}

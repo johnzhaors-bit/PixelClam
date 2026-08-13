@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>皮肤切换与原生免检真实测试</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 48px; background: #f5f6f8; color: #333; font: 14px/1.5 Arial, sans-serif; }
+    main { width: 520px; padding: 32px; background: #fff; }
+    h1 { margin: 0 0 24px; font-size: 20px; }
+    .actions { display: flex; align-items: center; gap: 8px; }
+    button { min-width: 80px; height: 40px; padding: 0 16px; border: 0; border-radius: 12px; color: #fff; background: #ff3b30; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>资源操作</h1>
+    <div class="actions">
+      <button id="native-button" class="plx-btn plx-btn-primary">原生按钮</button>
+      <button id="custom-button" class="company-custom-action">自研按钮</button>
+    </div>
+  </main>
+</body>
+</html>

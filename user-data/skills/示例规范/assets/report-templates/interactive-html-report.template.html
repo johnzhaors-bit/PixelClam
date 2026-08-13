@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UX 还原度检查报告</title>
+  <style>
+    [hidden] { display: none !important; }
+    :root {
+      --primary: #1993ff;
+      --primary-dark: #0b5fb3;
+      --success: #53bd73;
+      --warning: #f5c70f;
+      --danger: #f54c4c;
+      --text: #4d4d4d;
+      --muted: #737373;
+      --line: #d9d9d9;
+      --line-soft: #e5e5e5;
+      --bg: #f5f5f5;
+      --panel: #ffffff;
+      --selected: #e6f5ff;
+      --shadow: 0 8px 24px rgba(31, 35, 41, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .app-shell { width: 100%; max-width: 100%; min-width: 0; min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 56px 1fr; overflow-x: hidden; }
+    header {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 max(24px, calc((100vw - 1440px) / 2 + 24px));
+      color: #fff;
+      background: linear-gradient(90deg, #1993ff, #1178d9);
+      overflow: hidden;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #fff;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      flex: none;
+    }
+    .brand h1 { margin: 0; font-size: 18px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-meta { min-width: 0; max-width: 55%; display: flex; gap: 10px; color: rgba(255,255,255,.86); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-meta > * { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    main { width: 100%; max-width: 100%; padding: 16px 24px; min-width: 0; overflow-x: hidden; }
+    .preview-frame, .section, .score-card, .issue-card, .component-card {
+      background: var(--panel);
+      border: 1px solid var(--line-soft);
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+    }
+    .preview-frame { overflow: hidden; }
+    .preview-title, .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .preview-title { padding: 12px 14px; border-bottom: 1px solid var(--line-soft); }
+    h2, h3, .preview-title strong { margin: 0; color: #333; font-weight: 500; }
+    h2, .preview-title strong { font-size: 16px; }
+    h3 { font-size: 14px; }
+    .muted, .preview-title span { color: var(--muted); font-size: 12px; }
+    .image-stage {
+      display: grid;
+      place-items: start center;
+      background: #eee;
+      padding: 12px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 520px;
+    }
+    .image-stage img {
+      display: block;
+      width: min(100%, 960px);
+      max-width: 960px;
+      min-width: 0;
+      height: auto;
+      max-height: 420px;
+      object-fit: contain;
+      object-position: top center;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .report-pane { width: min(100%, 1360px); margin: 0 auto; display: flex; flex-direction: column; gap: 16px; min-width: 0; max-width: 1360px; }
+    .hero { display: grid; grid-template-columns: 220px 1fr; gap: 16px; }
+    .score-card { padding: 18px; min-height: 220px; display: grid; align-content: center; justify-items: center; text-align: center; }
+    .score-ring {
+      width: 132px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at center, #fff 0 58%, transparent 59%), conic-gradient(var(--primary) var(--score-angle), #eee 0);
+      transition: background 500ms ease;
+    }
+    .score-ring output { font-size: 34px; font-weight: 600; color: #333; }
+    .stars { margin-top: 10px; color: var(--warning); font-size: 18px; letter-spacing: 1px; }
+    .section { padding: 16px; }
+    .summary h2 { font-size: 20px; margin-bottom: 10px; }
+    .summary p { margin: 0; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+    .ai-status-panel {
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px solid var(--line-soft);
+      border-radius: 6px;
+      background: #fff;
+      display: grid;
+      gap: 10px;
+    }
+    .ai-status-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .ai-status-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .ai-status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 84px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .ai-status-badge.success { color: #11783a; background: #eefbf2; border-color: #b8e9c6; }
+    .ai-status-badge.fallback { color: #8a6804; background: #fff9dd; border-color: #f0dd7a; }
+    .ai-status-badge.skipped { color: #737373; background: #f7f7f7; border-color: #e1e1e1; }
+    .ai-status-badge.disabled { color: #737373; background: #f7f7f7; border-color: #e1e1e1; }
+    .ai-status-message { font-size: 13px; line-height: 1.7; color: var(--text); }
+    .ai-status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+    .ai-status-metric {
+      padding: 10px;
+      border: 1px solid var(--line-soft);
+      border-radius: 4px;
+      background: #fafafa;
+      display: grid;
+      gap: 6px;
+    }
+    .ai-status-metric strong { font-size: 18px; line-height: 1; color: #333; }
+    .round-section { display: grid; gap: 12px; }
+    .round-empty {
+      padding: 14px 16px;
+      border: 1px dashed var(--line);
+      border-radius: 4px;
+      background: #fafafa;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .round-grid { display: grid; gap: 10px; }
+    .round-card {
+      border: 1px solid var(--line-soft);
+      border-radius: 4px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+    .round-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .round-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+    .round-card-count {
+      font-size: 12px;
+      color: var(--primary-dark);
+      white-space: nowrap;
+    }
+    .round-card-checks {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .round-card-summary {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--muted);
+      border: 1px solid var(--line-soft);
+      background: #fafafa;
+      border-radius: 4px;
+      padding: 10px 12px;
+    }
+    .metric { padding: 10px; border: 1px solid var(--line-soft); border-radius: 4px; background: #fff; }
+    .metric strong { display: block; font-size: 18px; color: #333; }
+    .segmented { display: inline-flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: #fff; }
+    .segmented button {
+      height: 30px;
+      padding: 0 12px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .segmented button:last-child { border-right: 0; }
+    .segmented button.active { background: var(--selected); color: var(--primary); }
+    .issue-list, .bars { width: 100%; min-width: 0; display: grid; gap: 10px; }
+    .issue-card { width: 100%; min-width: 0; max-width: 100%; display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 10px 12px; align-items: start; padding: 12px; box-shadow: none; overflow: hidden; }
+    .issue-card > * { min-width: 0; max-width: 100%; }
+    .issue-card > div { grid-column: 3; grid-row: 1; }
+    .severity {
+      height: 24px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .severity.severe { color: #8a161c; background: #ffe6e3; border: 1px solid #ffaaa6; }
+    .severity.medium { color: #8a6804; background: #fffddb; border: 1px solid #faef87; }
+    .severity.minor { color: #3ba15b; background: #f0fff3; border: 1px solid #aeebbd; }
+    .issue-origin {
+      height: 24px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      white-space: nowrap;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: #fff;
+    }
+    .issue-origin.ai {
+      color: #0f6ad9;
+      background: rgba(25, 147, 255, 0.08);
+      border-color: rgba(25, 147, 255, 0.24);
+    }
+    .issue-origin.rule {
+      color: #4d4d4d;
+      background: #f7f8fa;
+      border-color: #d9d9d9;
+    }
+    .issue-card p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+    .issue-card h3, .issue-meta, .issue-card p { overflow-wrap: anywhere; }
+    .issue-meta { margin: 4px 0 0; color: var(--text); font-size: 12px; }
+    .issue-fields {
+      display: grid;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .issue-field {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      font-size: 13px;
+    }
+    .issue-field strong {
+      color: #333;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .issue-field span {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+    .delta { grid-column: 3; grid-row: 3; color: var(--primary-dark); font-size: 12px; white-space: normal; overflow-wrap: anywhere; padding-top: 2px; }
+    .issue-thumb {
+      grid-column: 3;
+      grid-row: 2;
+      width: 100%;
+      max-width: 168px;
+      height: auto;
+      aspect-ratio: var(--surface-aspect, 16 / 9);
+      padding: 0;
+      border: 1px solid var(--line-soft);
+      border-radius: 4px;
+      background: #f7f7f7;
+      overflow: hidden;
+      cursor: zoom-in;
+      position: relative;
+      box-shadow: none;
+    }
+    .issue-thumb img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #fff;
+    }
+    .issue-surface,
+    .preview-surface {
+      position: relative;
+      width: 100%;
+      background: #fff;
+      overflow: hidden;
+    }
+    .issue-surface {
+      height: 100%;
+    }
+    .issue-surface-image,
+    .preview-surface-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #fff;
+    }
+    .issue-surface-markers,
+    .preview-surface-markers {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .issue-surface-rects,
+    .preview-surface-rects {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .issue-highlight-rect {
+      position: absolute;
+      border: 2px solid rgba(255, 90, 87, 0.95);
+      box-shadow: 0 0 0 9999px rgba(255, 90, 87, 0.08);
+      border-radius: 4px;
+      background: transparent;
+    }
+    .issue-thumb .issue-highlight-rect {
+      border-width: 1.5px;
+      border-radius: 3px;
+      box-shadow: 0 0 0 9999px rgba(255, 90, 87, 0.06);
+    }
+    .issue-marker {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      margin-left: -12px;
+      margin-top: -12px;
+      border-radius: 999px;
+      background: #ff5a57;
+      color: #fff;
+      border: 2px solid #fff;
+      box-shadow: 0 6px 20px rgba(255, 90, 87, 0.35);
+      font-size: 12px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      line-height: 1;
+    }
+    .issue-thumb .issue-marker {
+      width: 18px;
+      height: 18px;
+      margin-left: -9px;
+      margin-top: -9px;
+      font-size: 11px;
+      border-width: 1.5px;
+    }
+    .copy-issue {
+      grid-column: 3;
+      grid-row: 4;
+      justify-self: start;
+      height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .copy-issue.copied {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--selected);
+    }
+    .preview-modal {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 40;
+    }
+    .preview-modal[hidden] { display: none; }
+    .preview-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+    }
+    .preview-modal-panel {
+      position: relative;
+      width: min(92vw, 1180px);
+      height: min(88vh, 840px);
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      z-index: 1;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+    .preview-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .preview-modal-head strong { color: #333; font-size: 15px; }
+    .preview-modal-close {
+      height: 30px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .preview-modal-body {
+      position: relative;
+      overflow: auto;
+      background: #f3f4f6;
+    }
+    .preview-surface {
+      display: block;
+      margin: 16px auto;
+      border: 1px solid var(--line);
+      background: #fff;
+      max-width: calc(100% - 32px);
+    }
+    .bar-row { display: grid; grid-template-columns: 148px 1fr 64px; gap: 12px; align-items: center; }
+    .bar-track { height: 10px; border-radius: 3px; background: #eee; overflow: hidden; }
+    .bar-fill { height: 100%; width: 0; background: var(--primary); transition: width 800ms ease; }
+    .component-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .component-card { padding: 14px; box-shadow: none; }
+    .component-card button {
+      width: 100%;
+      min-height: 32px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+    .component-body { display: none; margin-top: 12px; border-top: 1px solid var(--line-soft); padding-top: 12px; color: var(--muted); font-size: 13px; }
+    .component-card.open .component-body { display: block; }
+    .component-body dl { margin: 0; display: grid; grid-template-columns: 80px 1fr; gap: 6px 10px; }
+    .component-body dt { color: var(--text); }
+    .component-body dd { margin: 0; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .primary-action, .ghost-action { height: 32px; padding: 0 14px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+    .primary-action { border: 1px solid var(--primary); background: var(--primary); color: #fff; }
+    .ghost-action { border: 1px solid var(--line); background: #fff; color: var(--text); }
+    @media (max-width: 1040px) {
+      .image-stage { max-height: 520px; }
+    }
+    @media (max-width: 760px) {
+      header { padding: 0 12px; }
+      .header-meta { display: none; }
+      main { padding: 10px; }
+      .hero, .summary-grid, .component-grid { grid-template-columns: 1fr; }
+      .issue-card, .bar-row { grid-template-columns: 1fr; }
+      .issue-card > div, .issue-thumb, .delta, .copy-issue { grid-column: 1; }
+      .issue-card > div { grid-row: 3; }
+      .issue-thumb { grid-row: 4; }
+      .delta { grid-row: 5; }
+      .copy-issue { grid-row: 6; }
+      .issue-thumb { width: 100%; }
+      .delta { white-space: normal; }
+      .copy-issue { width: fit-content; }
+      .preview-modal-panel { width: 100vw; height: 100vh; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">UX</div>
+        <h1 id="pageTitle">UX 还原度报告</h1>
+      </div>
+      <div class="header-meta">
+        <span id="modeText"></span>
+        <span id="standardText"></span>
+      </div>
+    </header>
+    <main>
+      <section class="report-pane">
+        <div class="hero">
+          <article class="score-card">
+            <div class="score-ring" id="scoreRing" style="--score-angle: 0%">
+              <output id="score">0</output>
+            </div>
+            <div class="stars" id="stars"></div>
+            <div class="muted">综合得分 / 100</div>
+          </article>
+          <article class="summary section">
+            <h2>总体结论</h2>
+            <p id="summaryText"></p>
+            <div class="summary-grid" id="summaryGrid"></div>
+            <div class="ai-status-panel" id="aiStatusPanel" hidden></div>
+          </article>
+        </div>
+        <section class="section round-section" id="aiRoundsSection" hidden>
+          <div class="section-head">
+            <h2>AI 执行轮次</h2>
+            <span class="muted" id="aiRoundsMeta">展示模型每轮实际检查项与发现结果</span>
+          </div>
+          <div class="round-grid" id="aiRoundsList"></div>
+        </section>
+        <section class="section">
+          <div class="section-head">
+            <h2>主要问题</h2>
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <span class="muted" id="issueSourceMeta">区分大模型识别与程序规则发现</span>
+              <div class="segmented" aria-label="问题严重度筛选">
+                <button class="active" data-filter="all">全部</button>
+                <button data-filter="severe">严重</button>
+                <button data-filter="medium">中等</button>
+                <button data-filter="minor">轻微</button>
+              </div>
+            </div>
+          </div>
+          <div class="issue-list" id="issueList"></div>
+        </section>
+        <section class="preview-frame">
+          <div class="preview-title">
+            <strong>被测页面（辅助证据）</strong>
+            <span id="targetName"></span>
+          </div>
+          <div class="image-stage" id="imageStage"></div>
+        </section>
+        <section class="section">
+          <div class="section-head">
+            <h2>分维度评分</h2>
+            <span class="muted">按 frontend-ux-audit 权重</span>
+          </div>
+          <div class="bars" id="dimensionBars"></div>
+        </section>
+        <section class="section">
+          <div class="section-head">
+            <h2>组件明细</h2>
+            <div class="actions">
+              <button class="ghost-action" id="expandAll">展开全部</button>
+              <button class="primary-action" id="collapseAll">收起全部</button>
+            </div>
+          </div>
+          <div class="component-grid" id="componentGrid"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <div class="preview-modal" id="previewModal" hidden>
+    <div class="preview-modal-backdrop" data-close-preview></div>
+    <div class="preview-modal-panel" role="dialog" aria-modal="true" aria-labelledby="previewModalTitle">
+      <div class="preview-modal-head">
+        <strong id="previewModalTitle">问题定位</strong>
+        <button class="preview-modal-close" type="button" data-close-preview>关闭</button>
+      </div>
+      <div class="preview-modal-body">
+        <div class="preview-surface" id="previewSurface"></div>
+      </div>
+    </div>
+  </div>
+
+  <script id="report-data" type="application/json">__REPORT_JSON__</script>
+  <script>
+    const fallback = {
+      title: "UX 还原度报告",
+      targetName: "未命名页面",
+      targetImage: "",
+      mode: "检查方式：视觉验收",
+      standard: "标准：当前验收 Skill",
+      score: 0,
+      stars: "☆☆☆☆☆",
+      summary: "暂无结论。",
+      metrics: [],
+      issues: [],
+      dimensions: [],
+      components: []
+    };
+
+    const raw = document.querySelector("#report-data").textContent.trim();
+    const report = raw && raw !== "__REPORT_JSON__" ? JSON.parse(raw) : fallback;
+    const aiRounds = Array.isArray(report.aiRounds) ? report.aiRounds : [];
+    const issueSourceCounts = (Array.isArray(report.issues) ? report.issues : []).reduce((acc, issue) => {
+      const key = issue?.issueSource === "ai" ? "ai" : "rule";
+      acc[key] += 1;
+      return acc;
+    }, { ai: 0, rule: 0 });
+    const byId = (id) => document.getElementById(id);
+    const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char]));
+    const parseJson = (value, fallback) => {
+      try {
+        return JSON.parse(String(value || ''));
+      } catch {
+        return fallback;
+      }
+    };
+    const parseViewport = () => {
+      if (report.viewport?.width && report.viewport?.height) return report.viewport;
+      const metric = (report.metrics || []).find((item) => item.label === "视口");
+      const match = String(metric?.value || "").match(/(\d+)\D+(\d+)/);
+      if (!match) return { width: 1440, height: 900, devicePixelRatio: 1 };
+      return {
+        width: Number(match[1]) || 1440,
+        height: Number(match[2]) || 900,
+        devicePixelRatio: 1
+      };
+    };
+    const boxesToMarkers = (boxes) => {
+      if (!Array.isArray(boxes)) return [];
+      return boxes.map((box, index) => {
+        const x = Number(box?.x || 0);
+        const y = Number(box?.y || 0);
+        const width = Number(box?.width || 0);
+        const height = Number(box?.height || 0);
+        if (![x, y, width, height].every(Number.isFinite)) return null;
+        return {
+          label: index + 1,
+          center: {
+            x: x + width / 2,
+            y: y + height / 2
+          }
+        };
+      }).filter(Boolean);
+    };
+    const boxesToRects = (boxes) => {
+      if (!Array.isArray(boxes) || !boxes.length) return [];
+      const valid = boxes.map((box) => ({
+        x: Number(box?.x || 0),
+        y: Number(box?.y || 0),
+        width: Number(box?.width || 0),
+        height: Number(box?.height || 0)
+      })).filter((box) => [box.x, box.y, box.width, box.height].every(Number.isFinite) && box.width > 0 && box.height > 0);
+      if (!valid.length) return [];
+      const left = Math.min(...valid.map((box) => box.x));
+      const top = Math.min(...valid.map((box) => box.y));
+      const right = Math.max(...valid.map((box) => box.x + box.width));
+      const bottom = Math.max(...valid.map((box) => box.y + box.height));
+      const width = right - left;
+      const height = bottom - top;
+      const padX = width <= 120 ? 12 : 16;
+      const padY = height <= 48 ? 10 : 14;
+      return [{
+        x: Math.max(0, left - padX),
+        y: Math.max(0, top - padY),
+        width: width + padX * 2,
+        height: height + padY * 2
+      }];
+    };
+    const viewport = parseViewport();
+    const aiStatus = report.aiStatus || null;
+    const copyText = async (text) => {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "readonly");
+      textarea.style.position = "absolute";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    };
+    function renderPreviewSurface(issue, compact = false) {
+      const markers = Array.isArray(issue?.previewMarkers) && issue.previewMarkers.length
+        ? issue.previewMarkers
+        : boxesToMarkers(issue?.focusBoxes);
+      const rects = Array.isArray(issue?.previewRects) && issue.previewRects.length
+        ? issue.previewRects
+        : boxesToRects(issue?.focusBoxes);
+      const imagePath = markers.length
+        ? (report.targetImage || issue?.previewImage || "")
+        : (issue?.previewImage || report.targetImage || "");
+      if (!imagePath) {
+        return `<span class="muted" style="display:grid;place-items:center;width:100%;height:100%;">暂无定位图</span>`;
+      }
+      const markerHtml = markers.map((marker) => {
+        const left = viewport.width ? (Number(marker?.center?.x || 0) / viewport.width) * 100 : 0;
+        const top = viewport.height ? (Number(marker?.center?.y || 0) / viewport.height) * 100 : 0;
+        if (!Number.isFinite(left) || !Number.isFinite(top)) return "";
+        const label = esc(marker?.label ?? "");
+        return `<span class="issue-marker" style="left:${left}%;top:${top}%;">${label}</span>`;
+      }).join("");
+      const rectHtml = rects.map((rect) => {
+        const left = viewport.width ? (Number(rect?.x || 0) / viewport.width) * 100 : 0;
+        const top = viewport.height ? (Number(rect?.y || 0) / viewport.height) * 100 : 0;
+        const width = viewport.width ? (Number(rect?.width || 0) / viewport.width) * 100 : 0;
+        const height = viewport.height ? (Number(rect?.height || 0) / viewport.height) * 100 : 0;
+        if (![left, top, width, height].every(Number.isFinite)) return "";
+        return `<span class="issue-highlight-rect" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;"></span>`;
+      }).join("");
+      const cls = compact ? "issue-surface" : "preview-surface";
+      const imgCls = compact ? "issue-surface-image" : "preview-surface-image";
+      const markersCls = compact ? "issue-surface-markers" : "preview-surface-markers";
+      const rectsCls = compact ? "issue-surface-rects" : "preview-surface-rects";
+      const aspect = `${viewport.width} / ${viewport.height}`;
+      return `
+        <div class="${cls}" style="--surface-aspect:${aspect};">
+          <img class="${imgCls}" src="${esc(imagePath)}" alt="${esc(issue?.title || "问题定位图")}">
+          <div class="${rectsCls}">${rectHtml}</div>
+          <div class="${markersCls}">${markerHtml}</div>
+        </div>
+      `;
+    }
+    function openPreview(title, issue) {
+      const modal = byId("previewModal");
+      const head = byId("previewModalTitle");
+      const surface = byId("previewSurface");
+      head.textContent = title || "问题定位";
+      surface.innerHTML = renderPreviewSurface(issue, false);
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+
+    function closePreview() {
+      const modal = byId("previewModal");
+      byId("previewSurface").innerHTML = "";
+      modal.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    document.title = report.title || fallback.title;
+    byId("pageTitle").textContent = report.title || fallback.title;
+    byId("modeText").textContent = report.mode || fallback.mode;
+    byId("standardText").textContent = report.standard || fallback.standard;
+    byId("targetName").textContent = report.targetName || fallback.targetName;
+    byId("summaryText").textContent = report.summary || fallback.summary;
+    byId("stars").textContent = report.stars || fallback.stars;
+
+    if (report.targetImage) {
+      byId("imageStage").innerHTML = `<img src="${esc(report.targetImage)}" alt="${esc(report.targetName || "被测页面截图")}">`;
+    } else {
+      byId("imageStage").innerHTML = `<div class="section">未提供截图路径</div>`;
+    }
+
+    byId("summaryGrid").innerHTML = (report.metrics || []).map((item) => `
+      <div class="metric"><strong>${esc(item.value)}</strong><span class="muted">${esc(item.label)}</span></div>
+    `).join("");
+    function aiStatusBadgeClass(status) {
+      if (!status) return 'disabled';
+      if (status.success) return 'success';
+      if (status.fallback) return 'fallback';
+      if (status.state === 'skipped') return 'skipped';
+      if (!status.enabled) return 'disabled';
+      return 'skipped';
+    }
+    function aiStatusLabel(status) {
+      if (!status) return '未记录';
+      if (status.success) return 'AI 成功';
+      if (status.fallback) return 'AI 回退';
+      if (status.state === 'skipped') return 'AI 跳过';
+      if (!status.enabled) return '未启用 AI';
+      return 'AI 未完成';
+    }
+    function aiModeLabel(status) {
+      if (!status) return '未记录';
+      if (status.mode === 'multiround') return '多轮';
+      if (status.mode === 'single') return '单轮';
+      return '未使用';
+    }
+    function renderAiStatusPanel() {
+      const panel = byId("aiStatusPanel");
+      if (!panel) return;
+      if (!aiStatus) {
+        panel.hidden = true;
+        return;
+      }
+      const roundValue = aiStatus.totalRounds
+        ? `${Number(aiStatus.roundsCompleted || 0)}/${Number(aiStatus.totalRounds || 0)}`
+        : (aiStatus.mode === 'single' && aiStatus.attempted ? '1/1' : '—');
+      panel.innerHTML = `
+        <div class="ai-status-head">
+          <span class="ai-status-title">AI 执行状态</span>
+          <span class="ai-status-badge ${esc(aiStatusBadgeClass(aiStatus))}">${esc(aiStatusLabel(aiStatus))}</span>
+        </div>
+        <div class="ai-status-message">${esc(aiStatus.message || "未记录 AI 执行说明")}</div>
+        <div class="ai-status-grid">
+          <div class="ai-status-metric"><strong>${esc(aiModeLabel(aiStatus))}</strong><span class="muted">执行模式</span></div>
+          <div class="ai-status-metric"><strong>${esc(roundValue)}</strong><span class="muted">完成轮次</span></div>
+          <div class="ai-status-metric"><strong>${esc(aiStatus.model || aiStatus.provider || "未记录")}</strong><span class="muted">执行模型</span></div>
+        </div>
+        ${aiStatus.failureReason ? `<div class="muted">失败原因：${esc(aiStatus.failureReason)}</div>` : ""}
+      `;
+      panel.hidden = false;
+    }
+    renderAiStatusPanel();
+
+    function renderAiRounds() {
+      const section = byId("aiRoundsSection");
+      const list = byId("aiRoundsList");
+      const meta = byId("aiRoundsMeta");
+      if (!section || !list || !meta) return;
+      if (!aiRounds.length) {
+        section.hidden = true;
+        return;
+      }
+      meta.textContent = `共 ${aiRounds.length} 轮；即使某轮未发现问题，也会显示“已执行，未发现问题”。`;
+      list.innerHTML = aiRounds.map((round, index) => {
+        const checkedItems = Array.isArray(round.checkedItems) ? round.checkedItems.filter(Boolean) : [];
+        const issueCount = Number.isFinite(Number(round.issueCount)) ? Number(round.issueCount) : 0;
+        const summary = String(round.summary || "").trim();
+        const checksText = checkedItems.length ? checkedItems.join(" / ") : "本轮未记录检查项";
+        const summaryText = summary || (issueCount === 0 ? "本轮已执行，未发现问题。" : "本轮已执行，但未写出摘要。");
+        const targetLabel = String(round.targetLabel || "").trim();
+        const evidenceStats = round.evidenceStats || {};
+        const evidenceBits = [
+          Number.isFinite(Number(evidenceStats.elementCount)) ? `元素 ${Number(evidenceStats.elementCount)}` : "",
+          Number.isFinite(Number(evidenceStats.buttonCount)) ? `按钮 ${Number(evidenceStats.buttonCount)}` : "",
+          Number.isFinite(Number(evidenceStats.inputCount)) ? `输入框 ${Number(evidenceStats.inputCount)}` : "",
+          Number.isFinite(Number(evidenceStats.selectCount)) ? `下拉 ${Number(evidenceStats.selectCount)}` : ""
+        ].filter(Boolean);
+        return `
+          <article class="round-card">
+            <div class="round-card-head">
+              <div class="round-card-title">${esc(round.roundTitle || `第 ${index + 1} 轮`)}</div>
+              <div class="round-card-count">${issueCount === 0 ? "0 条问题（已执行）" : `${issueCount} 条问题`}</div>
+            </div>
+            ${targetLabel ? `<div class="round-card-checks"><strong>目标：</strong>${esc(targetLabel)}</div>` : ""}
+            <div class="round-card-checks"><strong>检查项：</strong>${esc(checksText)}</div>
+            ${evidenceBits.length ? `<div class="round-card-checks"><strong>证据规模：</strong>${esc(evidenceBits.join("，"))}</div>` : ""}
+            <div class="round-card-summary">${esc(summaryText)}</div>
+          </article>
+        `;
+      }).join("");
+      section.hidden = false;
+    }
+    renderAiRounds();
+
+    const issueSourceMeta = byId("issueSourceMeta");
+    if (issueSourceMeta) {
+      issueSourceMeta.textContent = `本次问题中：大模型识别 ${issueSourceCounts.ai} 条，程序规则 ${issueSourceCounts.rule} 条。`;
+    }
+
+    byId("issueList").innerHTML = (report.issues || []).map((issue, index) => {
+      const issueCopy = [
+        `问题来源：${issue.issueSourceLabel || (issue.issueSource === "ai" ? "大模型识别" : "程序规则")}`,
+        issue.subject ? `判定对象：${issue.subject}` : "",
+        `严重度：${issue.severityLabel || issue.severity || "轻微"}`,
+        `标题：${issue.title || ""}`,
+        issue.location ? `位置：${issue.location}` : "",
+        issue.actual ? `错误原因：${issue.actual}` : `错误原因：${issue.description || ""}`,
+        issue.standard ? `规范标准：${issue.standard}` : "",
+        issue.suggestion ? `修改建议：${issue.suggestion}` : "",
+        issue.delta ? `差异：${issue.delta}` : "",
+        issue.description ? `原始说明：${issue.description}` : ""
+      ].filter(Boolean).join("\n");
+      return `
+      <article class="issue-card" data-severity="${esc(issue.severity || "minor")}">
+        <span class="severity ${esc(issue.severity || "minor")}">${esc(issue.severityLabel || issue.severity || "轻微")}</span>
+        <span class="issue-origin ${esc(issue.issueSource === "ai" ? "ai" : "rule")}">${esc(issue.issueSourceLabel || (issue.issueSource === "ai" ? "大模型识别" : "程序规则"))}</span>
+        <div>
+          <h3>${esc(issue.title)}</h3>
+          ${issue.subject ? `<div class="issue-meta">判定对象：${esc(issue.subject)}</div>` : ""}
+          <div class="issue-fields">
+            ${issue.location ? `<div class="issue-field"><strong>问题位置</strong><span>${esc(issue.location)}</span></div>` : ""}
+            <div class="issue-field"><strong>错误原因</strong><span>${esc(issue.actual || issue.description || "未提供")}</span></div>
+            ${issue.standard ? `<div class="issue-field"><strong>规范标准</strong><span>${esc(issue.standard)}</span></div>` : ""}
+            ${issue.suggestion ? `<div class="issue-field"><strong>修改建议</strong><span>${esc(issue.suggestion)}</span></div>` : ""}
+            ${issue.delta ? `<div class="issue-field"><strong>差异数据</strong><span>${esc(issue.delta)}</span></div>` : ""}
+          </div>
+        </div>
+        <button class="issue-thumb" type="button" data-preview-index="${index}" data-preview-title="${esc(issue.title || "")}" data-preview-image="${esc(issue.previewImage || "")}">
+          ${renderPreviewSurface(issue, true)}
+        </button>
+        <span class="delta">${esc(issue.delta || "")}</span>
+        <button class="copy-issue" type="button" data-copy="${esc(issueCopy)}">复制</button>
+      </article>
+    `;
+    }).join("");
+
+    byId("dimensionBars").innerHTML = (report.dimensions || []).map((item) => {
+      const percent = item.max ? Math.round((item.score / item.max) * 1000) / 10 : item.percent || 0;
+      return `
+        <div class="bar-row">
+          <span>${esc(item.name)}</span>
+          <div class="bar-track"><div class="bar-fill" data-width="${esc(percent)}"></div></div>
+          <strong>${esc(item.score)} / ${esc(item.max)}</strong>
+        </div>`;
+    }).join("");
+
+    byId("componentGrid").innerHTML = (report.components || []).map((item, index) => `
+      <article class="component-card ${index < 2 ? "open" : ""}">
+        <button type="button"><h3>${esc(item.name)}</h3><span class="muted">${esc(item.status)}</span></button>
+        <div class="component-body">
+          <dl>
+            <dt>实际</dt><dd>${esc(item.actual)}</dd>
+            <dt>标准</dt><dd>${esc(item.standard)}</dd>
+            <dt>建议</dt><dd>${esc(item.suggestion || item.result || "")}</dd>
+          </dl>
+        </div>
+      </article>
+    `).join("");
+
+    const scoreOutput = byId("score");
+    const scoreRing = byId("scoreRing");
+    let score = 0;
+    const targetScore = Math.max(0, Math.min(100, Number(report.score || 0)));
+    const timer = window.setInterval(() => {
+      score += Math.max(1, Math.ceil(targetScore / 40));
+      if (score >= targetScore) {
+        score = targetScore;
+        window.clearInterval(timer);
+      }
+      scoreOutput.textContent = String(score);
+      scoreRing.style.setProperty("--score-angle", `${score}%`);
+    }, 18);
+
+    window.requestAnimationFrame(() => {
+      document.querySelectorAll(".bar-fill").forEach((bar) => {
+        bar.style.width = `${bar.dataset.width}%`;
+      });
+    });
+
+    document.querySelectorAll(".segmented button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".segmented button").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        const filter = button.dataset.filter;
+        document.querySelectorAll(".issue-card").forEach((card) => {
+          card.hidden = filter !== "all" && card.dataset.severity !== filter;
+        });
+      });
+    });
+
+    byId("issueList").addEventListener("click", async (event) => {
+      const thumb = event.target.closest(".issue-thumb");
+      if (thumb) {
+        const index = Number(thumb.dataset.previewIndex);
+        const issue = (report.issues || [])[index];
+        openPreview(issue?.title || "问题定位", issue);
+        return;
+      }
+      const button = event.target.closest(".copy-issue");
+      if (!button) return;
+      const original = button.textContent;
+      try {
+        await copyText(button.dataset.copy || "");
+        button.textContent = "已复制";
+        button.classList.add("copied");
+        window.setTimeout(() => {
+          button.textContent = original;
+          button.classList.remove("copied");
+        }, 1200);
+      } catch (error) {
+        button.textContent = "复制失败";
+        window.setTimeout(() => {
+          button.textContent = original;
+        }, 1200);
+      }
+    });
+
+    byId("previewModal").addEventListener("click", (event) => {
+      if (event.target.closest("[data-close-preview]")) closePreview();
+      if (event.target.classList.contains("preview-modal-backdrop")) closePreview();
+    });
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !byId("previewModal").hidden) closePreview();
+    });
+
+    byId("componentGrid").addEventListener("click", (event) => {
+      const button = event.target.closest(".component-card button");
+      if (button) button.closest(".component-card").classList.toggle("open");
+    });
+    byId("expandAll").addEventListener("click", () => {
+      document.querySelectorAll(".component-card").forEach((card) => card.classList.add("open"));
+    });
+    byId("collapseAll").addEventListener("click", () => {
+      document.querySelectorAll(".component-card").forEach((card) => card.classList.remove("open"));
+    });
+
+  </script>
+</body>
+</html>

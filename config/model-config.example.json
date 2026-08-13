@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "provider": "openai-compatible",
+  "baseUrl": "https://api.moonshot.cn/v1",
+  "model": "kimi-k3",
+  "apiKey": "",
+  "temperature": 1,
+  "timeoutMs": 300000
+}

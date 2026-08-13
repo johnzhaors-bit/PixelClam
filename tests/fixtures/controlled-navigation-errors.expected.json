@@ -1,0 +1,27 @@
+{
+  "fixture": "controlled-navigation-errors.html",
+  "skin": "default",
+  "expectedByRound": {
+    "pagination": [
+      { "id": "PAGINATION-PAGE-WIDTH", "target": "#pagination-bad", "actual": "36px", "expected": "28px" },
+      { "id": "PAGINATION-JUMP-WIDTH", "target": "#pagination-bad", "actual": "60px", "expected": "45px" }
+    ],
+    "breadcrumb": [
+      { "id": "BREADCRUMB-CURRENT-SIZE", "target": "#breadcrumb-bad", "actual": "12px", "expected": "16px" },
+      { "id": "BREADCRUMB-CURRENT-WEIGHT", "target": "#breadcrumb-bad", "actual": "400", "expected": "700" }
+    ],
+    "toolbar": [
+      { "id": "TOOLBAR-HIT-SIZE", "target": "#toolbar-bad", "actual": "30px", "expected": "24px" },
+      { "id": "TOOLBAR-ICON-SIZE", "target": "#toolbar-bad", "actual": "20px", "expected": "16px" }
+    ],
+    "popover": [
+      { "id": "POPOVER-RADIUS", "target": "#popover-bad", "actual": "9px", "expected": "3px" },
+      { "id": "POPOVER-CONTENT-PADDING", "target": "#popover-bad", "actual": "16px", "expected": "8px" }
+    ],
+    "collapse": [
+      { "id": "COLLAPSE-TITLE-HEIGHT", "target": "#collapse-bad", "actual": "40px", "expected": "32px" },
+      { "id": "COLLAPSE-TITLE-PADDING", "target": "#collapse-bad", "actual": "12px", "expected": "8px" }
+    ]
+  },
+  "expectedCleanTargets": ["#pagination-clean", "#breadcrumb-clean", "#toolbar-clean", "#popover-clean", "#collapse-clean"]
+}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>UXChecker 双模式测试页</title>
+    <style>
+      body { margin: 24px; font: 14px/1.5 sans-serif; }
+      .toolbar { display: flex; gap: 16px; }
+      button { height: 32px; padding: 0 16px; border: 1px solid #c8ccd4; border-radius: 2px; }
+      .primary { color: white; background: #315efb; }
+      .hidden-login { display: none; }
+    </style>
+  </head>
+  <body>
+    <form class="hidden-login"><input type="password" value="secret" /><button>登录</button></form>
+    <div class="toolbar">
+      <button class="primary">新建资源</button>
+      <button>导出</button>
+      <button>删除</button>
+    </div>
+    <label>名称 <input value="测试数据" /></label>
+  </body>
+</html>

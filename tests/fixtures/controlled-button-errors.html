@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>UXChecker 单组件可控错误</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #4d4d4d; background: #f5f7fa; font: 14px/1.5 "PingFang SC", sans-serif; }
+    main { margin: 32px; padding: 24px; background: #fff; }
+    .toolbar { display: flex; align-items: center; gap: 8px; margin-top: 24px; }
+    .custom-primary-button {
+      min-width: 88px;
+      height: 40px; /* CONTROLLED_ERROR BTN-HEIGHT: expected 32px */
+      padding: 0 16px;
+      color: #fff;
+      background: #1993ff;
+      border: 1px solid #1993ff;
+      border-radius: 10px; /* CONTROLLED_ERROR BTN-RADIUS: expected 3px */
+      line-height: 38px;
+      letter-spacing: 1px;
+      text-align: center;
+      font: 12px/38px "Helvetica Neue", "PingFang SC", Tahoma, "Microsoft Yahei", sans-serif;
+    }
+    .custom-default-button {
+      min-width: 88px;
+      height: 32px;
+      padding: 0 16px;
+      color: #1993ff;
+      background: #fff;
+      border: 1px solid #d9d9d9;
+      border-radius: 3px;
+      line-height: 30px;
+      letter-spacing: 1px;
+      text-align: center;
+      font: 12px/30px "Helvetica Neue", "PingFang SC", Tahoma, "Microsoft Yahei", sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <main id="resource-page">
+    <h1>资源管理</h1>
+    <div class="toolbar" aria-label="资源操作">
+      <button id="create-resource" class="custom-primary-button" data-component-family="button" data-variant="primary">新建资源</button>
+      <button id="export-resource" class="custom-default-button" data-component-family="button" data-variant="default">导出</button>
+    </div>
+  </main>
+</body>
+</html>

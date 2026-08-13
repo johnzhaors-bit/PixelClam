@@ -1,0 +1,22 @@
+{
+  "kind": "independent-component-audit-pack",
+  "version": "1.0.0",
+  "selfContained": true,
+  "skin": { "id": "default", "name": "通用浅色示例" },
+  "component": { "id": "input", "name": "Input", "displayName": "输入框" },
+  "scope": { "include": ["input[type=text]", "input[type=password]", "textarea"], "exclude": ["checkbox", "radio", "file"] },
+  "rules": {
+    "heightPx": 32,
+    "paddingXpx": 12,
+    "borderWidthPx": 1,
+    "borderRadiusPx": 4,
+    "fontSizePx": 14,
+    "textColor": "#1f2329",
+    "backgroundColor": "#ffffff",
+    "borderColor": "#d0d5dd",
+    "placeholderColor": "#98a2b3",
+    "focus": { "borderColor": "#1677ff", "visibleFocusRequired": true },
+    "disabled": { "backgroundColor": "#f2f4f7", "opacity": 0.7 }
+  },
+  "comparisonPolicy": { "domTolerancePx": 1, "imageTolerancePx": 2, "maxIssuesPerInstance": 2 }
+}

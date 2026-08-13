@@ -1,0 +1,27 @@
+{
+  "fixture": "controlled-complex-errors.html",
+  "skin": "default",
+  "expectedByRound": {
+    "condition-editor": [
+      { "id": "CONDITION-ROW-HEIGHT", "target": "#condition-editor-bad", "actual": "44px", "expected": "40px" },
+      { "id": "CONDITION-CELL-PADDING", "target": "#condition-editor-bad", "actual": "16px", "expected": "8px" }
+    ],
+    "data-querying": [
+      { "id": "QUERY-BORDER", "target": "#data-querying-bad", "actual": "2px", "expected": "1px" },
+      { "id": "QUERY-RADIUS", "target": "#data-querying-bad", "actual": "8px", "expected": "3px" }
+    ],
+    "date-picker": [
+      { "id": "DATE-HEIGHT", "target": "#date-picker-bad", "actual": "40px", "expected": "32px" },
+      { "id": "DATE-FORMAT", "target": "#date-picker-bad", "actual": "日期包含时间", "expected": "yyyy-MM-dd", "mustContain": ["yyyy-MM-dd"] }
+    ],
+    "date-range-picker": [
+      { "id": "RANGE-SEPARATOR", "target": "#date-range-picker-bad", "actual": "-", "expected": "到", "mustContain": ["连接", "到"] },
+      { "id": "RANGE-ORDER", "target": "#date-range-picker-bad", "actual": "结束早于开始", "expected": "结束不早于开始", "mustContain": ["结束", "开始"] }
+    ],
+    "drawer": [
+      { "id": "DRAWER-PLACEMENT", "target": "#drawer-bad", "actual": "左侧", "expected": "右侧", "mustContain": ["right"] },
+      { "id": "DRAWER-MASK", "target": "#drawer-bad", "actual": "无遮罩", "expected": "半透明遮罩", "mustContain": ["遮罩"] }
+    ]
+  },
+  "expectedCleanTargets": ["#condition-editor-clean", "#data-querying-clean", "#date-picker-clean", "#date-range-picker-clean", "#drawer-clean"]
+}

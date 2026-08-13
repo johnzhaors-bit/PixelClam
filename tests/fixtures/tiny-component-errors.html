@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>UXChecker 极小多错误测试页</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px; color: #4d4d4d; background: #f5f7fa; font: 12px/1.5 "Microsoft Yahei", sans-serif; }
+    main { width: 520px; padding: 24px; background: #fff; }
+    h1 { margin: 0 0 20px; font-size: 20px; }
+    .row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    label { width: 72px; }
+    input, select { width: 220px; color: #4d4d4d; background: #fff; border: 1px solid #d9d9d9; }
+    #bad-input { height: 40px; padding: 0 4px; border-radius: 9px; font-size: 16px; }
+    #bad-select { height: 24px; padding: 0 4px; border-radius: 0; }
+    .actions { display: flex; gap: 20px; margin-left: 84px; }
+    button { height: 40px; padding: 0 6px; border-radius: 10px; font-size: 16px; cursor: pointer; }
+    #bad-primary { color: #fff; background: #0077ff; border: 2px solid #0077ff; }
+    #bad-default { color: #0077ff; background: #fff; border: 2px solid #d9d9d9; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>极小多错误测试页</h1>
+    <div class="row">
+      <label for="bad-input">资源名称</label>
+      <input id="bad-input" class="custom-input" data-component-family="input" value="测试资源">
+    </div>
+    <div class="row">
+      <label for="bad-select">资源类型</label>
+      <select id="bad-select" class="custom-select" data-component-family="select">
+        <option>全部类型</option>
+      </select>
+    </div>
+    <div class="actions" aria-label="操作按钮组">
+      <button id="bad-primary" class="custom-button primary" data-component-family="button">查询</button>
+      <button id="bad-default" class="custom-button" data-component-family="button">重置</button>
+    </div>
+  </main>
+</body>
+</html>

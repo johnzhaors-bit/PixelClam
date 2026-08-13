@@ -1,0 +1,21 @@
+{
+  "kind": "independent-component-audit-pack",
+  "version": "1.0.0",
+  "selfContained": true,
+  "skin": { "id": "default", "name": "通用浅色示例" },
+  "component": { "id": "table", "name": "Table", "displayName": "表格" },
+  "scope": { "include": ["table", "[role=table]", "具有表头和数据行的列表"] },
+  "rules": {
+    "headerHeightPx": 40,
+    "rowMinHeightPx": 40,
+    "cellPaddingXpx": 16,
+    "fontSizePx": 14,
+    "headerBackgroundColor": "#f7f8fa",
+    "bodyBackgroundColor": "#ffffff",
+    "dividerColor": "#eaecf0",
+    "headerTextWeight": 600,
+    "alignment": "同列内容共享左边界；数值列可统一右对齐",
+    "overflow": "内容不得遮挡相邻列；长文本应截断、换行或提供查看方式"
+  },
+  "comparisonPolicy": { "domTolerancePx": 1, "imageTolerancePx": 2, "maxIssuesPerInstance": 2 }
+}

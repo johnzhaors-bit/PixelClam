@@ -1,0 +1,21 @@
+{
+  "fixture": "controlled-multi-component-errors.html",
+  "skin": "default",
+  "expectedByRound": {
+    "layout": [
+      { "id": "LAYOUT-LEFT", "target": "#query-panel", "actual": "相对标题向右偏移18px", "expected": "同级区域左边界对齐" }
+    ],
+    "button": [
+      { "id": "BUTTON-HEIGHT", "target": "#query-button", "actual": "40px", "expected": "32px" },
+      { "id": "BUTTON-RADIUS", "target": "#query-button", "actual": "10px", "expected": "3px" }
+    ],
+    "input": [
+      { "id": "INPUT-HEIGHT", "target": "#resource-name", "actual": "38px", "expected": "32px" },
+      { "id": "INPUT-RADIUS", "target": "#resource-name", "actual": "0px", "expected": "3px" }
+    ],
+    "select": [
+      { "id": "SELECT-HEIGHT", "target": "#resource-type", "actual": "26px", "expected": "32px" },
+      { "id": "SELECT-RADIUS", "target": "#resource-type", "actual": "8px", "expected": "3px" }
+    ]
+  }
+}

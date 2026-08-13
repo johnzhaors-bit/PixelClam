@@ -1,0 +1,26 @@
+{
+  "fixture":"controlled-chart-content-errors.html","skin":"default",
+  "expectedByRound":{
+    "bar-chart":[
+      {"id":"BAR-A","target":"#bar-chart-bad","actual":"A值60柱高40","expected":"A柱高60","mustContain":["A","60"]},
+      {"id":"BAR-B","target":"#bar-chart-bad","actual":"B值40柱高60","expected":"B柱高40","mustContain":["B","40"]}
+    ],
+    "line-chart":[
+      {"id":"LINE-ORDER","target":"#line-chart-bad","actual":"Jan,Mar,Feb","expected":"Jan,Feb,Mar","mustContain":["顺序"]},
+      {"id":"LINE-POINT","target":"#line-chart-bad","actual":"Feb与Mar点位颠倒","expected":"点位与60/40一致","mustContain":["点", "60"]}
+    ],
+    "rate":[
+      {"id":"RATE-COUNT","target":"#rate-bad","actual":"4项","expected":"5项"},
+      {"id":"RATE-CONTIGUOUS","target":"#rate-bad","actual":"第1和第3选中","expected":"从起点连续","mustContain":["连续"]}
+    ],
+    "text-ellipsis":[
+      {"id":"ELLIPSIS-NO-OVERFLOW","target":"#text-ellipsis-bad","actual":"未溢出却省略","expected":"只在溢出时省略","mustContain":["容器", "足够"]},
+      {"id":"ELLIPSIS-CONTENT","target":"#text-ellipsis-bad","actual":"资源名称…","expected":"资源名称","mustContain":["省略"]}
+    ],
+    "time-line":[
+      {"id":"TIMELINE-ORDER","target":"错误时间轴","actual":"10:00后为09:30","expected":"时间顺序一致","mustContain":["顺序"]},
+      {"id":"TIMELINE-CONNECTOR","target":"错误时间轴","actual":"第二节点连接线缺失","expected":"相邻节点连续连接","mustContain":["连接线"]}
+    ]
+  },
+  "expectedCleanTargets":["#bar-chart-clean","#line-chart-clean","#rate-clean","#text-ellipsis-clean","#time-line-clean"]
+}

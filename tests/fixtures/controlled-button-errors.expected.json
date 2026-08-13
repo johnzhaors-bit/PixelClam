@@ -1,0 +1,20 @@
+{
+  "fixture": "controlled-button-errors.html",
+  "skin": "default",
+  "componentFamily": "button",
+  "expectedIssues": [
+    {
+      "id": "BTN-HEIGHT",
+      "target": "#create-resource",
+      "actual": "40px",
+      "expected": "32px"
+    },
+    {
+      "id": "BTN-RADIUS",
+      "target": "#create-resource",
+      "actual": "10px",
+      "expected": "3px"
+    }
+  ],
+  "expectedCleanTargets": ["#export-resource"]
+}

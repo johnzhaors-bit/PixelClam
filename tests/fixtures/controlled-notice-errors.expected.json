@@ -1,0 +1,26 @@
+{
+  "fixture":"controlled-notice-errors.html","skin":"default",
+  "expectedByRound":{
+    "menu":[
+      {"id":"MENU-ACTIVE","target":"#menu-bad","actual":"两个活动项","expected":"仅一个活动目标","mustContain":["活动"]},
+      {"id":"MENU-INDENT","target":"#menu-bad","actual":"子项与父项同缩进","expected":"父子缩进明确","mustContain":["缩进"]}
+    ],
+    "message":[
+      {"id":"MESSAGE-INTERNAL","target":"#message-bad","actual":"ERR_DB_1042","expected":"不暴露内部标识","mustContain":["ERR_DB_1042"]},
+      {"id":"MESSAGE-CAUSE","target":"#message-bad","actual":"无原因和方案","expected":"说明原因并提供可行方案","mustContain":["原因"]}
+    ],
+    "system-prompt":[
+      {"id":"SYSTEM-SEMANTIC","target":"#system-prompt-bad","actual":"warning使用信息蓝","expected":"警告语义色","mustContain":["警告"]},
+      {"id":"SYSTEM-SENTENCE","target":"#system-prompt-bad","actual":"警告使用陈述句","expected":"祈使句","mustContain":["祈使"]}
+    ],
+    "text-prompt":[
+      {"id":"TEXT-PROMPT-PLACEMENT","target":"#text-prompt-bad","actual":"距字段30px","expected":"紧邻字段","mustContain":["紧邻"]},
+      {"id":"TEXT-PROMPT-HIERARCHY","target":"#text-prompt-bad","actual":"18px粗体深色","expected":"低视觉层级","mustContain":["视觉层级"]}
+    ],
+    "toast":[
+      {"id":"TOAST-PLACEMENT","target":"#toast-bad","actual":"右下","expected":"顶部居中","mustContain":["顶部", "居中"]},
+      {"id":"TOAST-CONTENT","target":"#toast-bad","actual":"长内容并带操作","expected":"简短轻量反馈","mustContain":["简短"]}
+    ]
+  },
+  "expectedCleanTargets":["#menu-clean","#message-clean","#system-prompt-clean","#text-prompt-clean","#toast-clean"]
+}

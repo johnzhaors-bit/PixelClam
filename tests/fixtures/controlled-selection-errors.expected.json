@@ -1,0 +1,27 @@
+{
+  "fixture": "controlled-selection-errors.html",
+  "skin": "default",
+  "expectedByRound": {
+    "alphabetical": [
+      { "id": "ALPHABETICAL-ORDER", "target": "#alphabetical-bad", "actual": "E在D之前", "expected": "A-Z顺序", "mustContain": ["顺序"] },
+      { "id": "ALPHABETICAL-HASH", "target": "#alphabetical-bad", "actual": "#不在末尾", "expected": "#收尾", "mustContain": ["#", "收尾"] }
+    ],
+    "captcha": [
+      { "id": "CAPTCHA-INPUT-WIDTH", "target": "#captcha-bad", "actual": "90px", "expected": "80px" },
+      { "id": "CAPTCHA-LABEL-SPACING", "target": "#captcha-bad", "actual": "2px", "expected": "5px" }
+    ],
+    "card": [
+      { "id": "CARD-BORDER", "target": "#card-bad", "actual": "2px", "expected": "1px" },
+      { "id": "CARD-RADIUS", "target": "#card-bad", "actual": "8px", "expected": "3px" }
+    ],
+    "cascader": [
+      { "id": "CASCADER-HEIGHT", "target": "#cascader-bad", "actual": "40px", "expected": "32px" },
+      { "id": "CASCADER-PATH", "target": "#cascader-bad", "actual": "滨江区到浙江省", "expected": "根节点到叶子节点", "mustContain": ["根", "叶"] }
+    ],
+    "color-picker": [
+      { "id": "COLOR-PICKER-SIZE", "target": "#color-picker-bad", "actual": "72x36px", "expected": "60x32px" },
+      { "id": "COLOR-PICKER-SWATCH", "target": "#color-picker-bad", "actual": "24px", "expected": "18px" }
+    ]
+  },
+  "expectedCleanTargets": ["#alphabetical-clean", "#captcha-clean", "#card-clean", "#cascader-clean", "#color-picker-clean"]
+}

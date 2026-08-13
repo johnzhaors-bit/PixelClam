@@ -1,0 +1,21 @@
+{
+  "kind": "independent-component-audit-pack",
+  "version": "1.0.0",
+  "selfContained": true,
+  "skin": { "id": "default", "name": "通用浅色示例" },
+  "component": { "id": "select", "name": "Select", "displayName": "选择器" },
+  "scope": { "include": ["select", "[role=combobox]", "带下拉触发器的单选控件"] },
+  "rules": {
+    "heightPx": 32,
+    "paddingLeftPx": 12,
+    "paddingRightPx": 32,
+    "borderWidthPx": 1,
+    "borderRadiusPx": 4,
+    "fontSizePx": 14,
+    "backgroundColor": "#ffffff",
+    "borderColor": "#d0d5dd",
+    "triggerIconMustBeVisible": true,
+    "focus": { "borderColor": "#1677ff", "visibleFocusRequired": true }
+  },
+  "comparisonPolicy": { "domTolerancePx": 1, "imageTolerancePx": 2, "maxIssuesPerInstance": 2 }
+}

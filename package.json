@@ -1,0 +1,119 @@
+{
+  "name": "pixelclam",
+  "version": "0.2.0",
+  "private": false,
+  "description": "PixelClam — AI UX Review & Visual QA for screenshots and runtime DOM snapshots.",
+  "author": {
+    "name": "PixelClam contributors"
+  },
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "node scripts/start-dev.mjs",
+    "dev": "node scripts/start-dev.mjs",
+    "collect": "node src/main/collector.mjs",
+    "audit": "node src/main/dom-audit-runner.mjs",
+    "acceptance:verify": "node scripts/verify-app-acceptance-run.mjs",
+    "audit:legacy": "node src/main/audit-runner.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "model:external": "node scripts/switch-model-config.mjs external",
+    "model:internal": "node scripts/switch-model-config.mjs internal",
+    "bootstrap:refresh": "node scripts/refresh-build-bootstrap.mjs",
+    "dist:win:test": "electron-builder --win portable --x64",
+    "dist:win:setup": "electron-builder --win nsis --x64",
+    "dist:portable:win": "npm run bootstrap:refresh && electron-builder --win portable --x64",
+    "dist:portable:mac": "electron-builder --mac zip --arm64",
+    "dist:portable:linux": "electron-builder --linux AppImage --x64",
+    "dist:portable:all": "npm run dist:portable:win && npm run dist:portable:mac && npm run dist:portable:linux"
+  },
+  "dependencies": {
+    "playwright": "^1.44.0"
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.uxchecker.desktop",
+    "productName": "PixelClam",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "config/model-config.example.json",
+      "package.json",
+      "!tests/**/*",
+      "!user-data/**/*",
+      "!docs/**/*",
+      "!**/*.map"
+    ],
+    "extraResources": [
+      {
+        "from": ".build-test-assets",
+        "to": "test-bootstrap",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-${version}-Windows-${arch}.${ext}"
+    },
+    "nsis": {
+      "artifactName": "${productName}-${version}-Windows-${arch}-Setup.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-Windows-${arch}-Portable.${ext}"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "tar.gz",
+        "deb"
+      ],
+      "category": "Development",
+      "maintainer": "PixelClam contributors",
+      "artifactName": "${productName}-${version}-Linux-${arch}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-${version}-macOS-${arch}.${ext}"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

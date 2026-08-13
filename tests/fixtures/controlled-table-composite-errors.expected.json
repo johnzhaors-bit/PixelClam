@@ -1,0 +1,11 @@
+{
+  "fixture":"controlled-table-composite-errors.html","skin":"default",
+  "expectedByRound":{
+    "executive-strategy":[{"id":"EXEC-TOP","target":"#executive-strategy-bad","actual":"4px","expected":"16px"},{"id":"EXEC-WIDTH","target":"#executive-strategy-bad","actual":"360px","expected":"488px"}],
+    "information-view":[{"id":"VIEW-RADIUS","target":"#information-view-bad","actual":"8px","expected":"3px"},{"id":"VIEW-LINE","target":"#information-view-bad","actual":"26px","expected":"18px"}],
+    "pick-list":[{"id":"PICK-WIDTH","target":"#pick-list-bad","actual":"220px","expected":"300px"},{"id":"PICK-GAP","target":"#pick-list-bad","actual":"8px","expected":"24px"}],
+    "table-x":[{"id":"TABLEX-HEIGHT","target":"#table-x-bad","actual":"48px","expected":"40px"},{"id":"TABLEX-PADDING","target":"#table-x-bad","actual":"16px","expected":"8px"}],
+    "table":[{"id":"TABLE-HEIGHT","target":"#table-bad","actual":"36px","expected":"40px"},{"id":"TABLE-PADDING","target":"#table-bad","actual":"4px","expected":"8px"}]
+  },
+  "expectedCleanTargets":["#executive-strategy-clean","#information-view-clean","#pick-list-clean","#table-x-clean","#table-clean"]
+}

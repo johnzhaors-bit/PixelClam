@@ -1,0 +1,19 @@
+{
+  "kind": "independent-component-audit-pack",
+  "version": "1.0.0",
+  "selfContained": true,
+  "skin": { "id": "default", "name": "通用浅色示例" },
+  "component": { "id": "pagination", "name": "Pagination", "displayName": "分页" },
+  "scope": { "include": ["[aria-label*=pagination]", "页码、上一页、下一页组成的导航"] },
+  "rules": {
+    "itemSizePx": 32,
+    "itemGapPx": 8,
+    "borderRadiusPx": 4,
+    "fontSizePx": 14,
+    "textColor": "#344054",
+    "active": { "backgroundColor": "#1677ff", "textColor": "#ffffff" },
+    "disabled": { "opacity": 0.5, "mustNotAppearInteractive": true },
+    "alignment": "分页整体应与所属内容区边界对齐"
+  },
+  "comparisonPolicy": { "domTolerancePx": 1, "imageTolerancePx": 2, "maxIssuesPerInstance": 2 }
+}

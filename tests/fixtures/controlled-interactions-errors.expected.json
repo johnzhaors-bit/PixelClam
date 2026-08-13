@@ -1,0 +1,27 @@
+{
+  "fixture": "controlled-interactions-errors.html",
+  "skin": "default",
+  "expectedByRound": {
+    "checkbox": [
+      { "id": "CHECKBOX-SIZE", "target": "#checkbox-bad", "actual": "20px", "expected": "14px" },
+      { "id": "CHECKBOX-RADIUS", "target": "#checkbox-bad", "actual": "6px", "expected": "2px" }
+    ],
+    "radio": [
+      { "id": "RADIO-SIZE", "target": "#radio-bad", "actual": "20px", "expected": "14px" },
+      { "id": "RADIO-SHAPE", "target": "#radio-bad", "actual": "0px", "expected": "圆形" }
+    ],
+    "switch": [
+      { "id": "SWITCH-WIDTH", "target": "#switch-bad", "actual": "50px", "expected": "44px" },
+      { "id": "SWITCH-THUMB", "target": "#switch-bad", "actual": "14px", "expected": "18px" }
+    ],
+    "tab": [
+      { "id": "TAB-WEIGHT", "target": "#tab-bad", "actual": "400", "expected": "bold" },
+      { "id": "TAB-CLOSE-SIZE", "target": "#tab-bad", "actual": "24px", "expected": "16px" }
+    ],
+    "tag": [
+      { "id": "TAG-LINE-HEIGHT", "target": "#tag-bad", "actual": "30px", "expected": "22px" },
+      { "id": "TAG-RADIUS", "target": "#tag-bad", "actual": "10px", "expected": "3px" }
+    ]
+  },
+  "expectedCleanTargets": ["#checkbox-clean", "#radio-clean", "#switch-clean", "#tab-clean", "#tag-clean"]
+}

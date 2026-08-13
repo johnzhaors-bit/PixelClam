@@ -1,0 +1,11 @@
+{
+  "fixture":"controlled-special-input-errors.html","skin":"default",
+  "expectedByRound":{
+    "location":[{"id":"LOCATION-ORDER","target":"#location-bad","actual":"区市省","expected":"省市区","mustContain":["省","市","区"]},{"id":"LOCATION-GAP","target":"#location-bad","actual":"4px","expected":"16px"}],
+    "period-picker":[{"id":"PERIOD-WIDTH","target":"#period-picker-bad","actual":"50px","expected":"39px"},{"id":"PERIOD-HEIGHT","target":"#period-picker-bad","actual":"24px","expected":"16px"}],
+    "search":[{"id":"SEARCH-HEIGHT","target":"#search-bad","actual":"40px","expected":"32px"},{"id":"SEARCH-ICON","target":"#search-bad","actual":"图标在左","expected":"图标在右","mustContain":["右"]}],
+    "tip":[{"id":"TIP-ADJACENT","target":"#tip-bad","actual":"图标远离标签","expected":"紧邻","mustContain":["紧邻"]},{"id":"TIP-CONTENT","target":"#tip-bad","actual":"内容无关且冗长","expected":"解释相邻概念且简短","mustContain":["简短"]}],
+    "novice-guide":[{"id":"GUIDE-ARROW","target":"#novice-guide-bad","actual":"箭头背离目标","expected":"指向目标","mustContain":["箭头","目标"]},{"id":"GUIDE-STEP","target":"#novice-guide-bad","actual":"实际第2步显示1/3和完成","expected":"2/3和下一步","mustContain":["2/3","下一步"]}]
+  },
+  "expectedCleanTargets":["#location-clean","#period-picker-clean","#search-clean","#tip-clean","#novice-guide-clean"]
+}

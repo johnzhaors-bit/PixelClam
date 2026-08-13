@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "generic-layout-audit-pack-v1",
+  "name": "通用 Web 页面布局示例",
+  "skinIndependent": true,
+  "purpose": "检查页面实际存在区域的对齐、间距、分组和溢出，不要求匹配固定参考页面。",
+  "modePolicy": {
+    "image": { "numericPolicy": "只判断清晰可见的关系，不编造精确像素", "confidenceThreshold": 0.8 },
+    "dom": { "numericPolicy": "优先使用 bbox、computed style 和相邻元素坐标", "confidenceThreshold": 0.85 }
+  },
+  "atomicRules": [
+    { "id": "LAYOUT.ALIGN.001", "title": "同级区域共享左对齐线", "appliesWhen": "存在两个以上同级业务区域", "check": "比较标题、查询区、工具栏、内容区的左边界", "expected": "同级区域左边界一致", "domTolerancePx": 2, "severity": "high" },
+    { "id": "LAYOUT.ALIGN.002", "title": "重复项目保持共同参考线", "appliesWhen": "存在重复表单行、卡片或表格列", "check": "比较同构项目对应轴线", "expected": "对应内容起点与顶部对齐", "domTolerancePx": 2, "severity": "medium" },
+    { "id": "LAYOUT.SPACE.001", "title": "页面采用一致的间距节奏", "appliesWhen": "存在可比较的相邻内容或区块", "check": "判断关系层级后比较重复间距", "expected": "优先使用 4、8、16、24、32px 间距序列，同层级间距一致", "domTolerancePx": 2, "severity": "medium" },
+    { "id": "LAYOUT.GROUP.001", "title": "组内距离小于组间距离", "appliesWhen": "页面存在多个语义分组", "check": "比较组内和组间空白", "expected": "相近内容聚合，不同分组通过更大间距区分", "domTolerancePx": 2, "severity": "medium" },
+    { "id": "LAYOUT.OVERFLOW.001", "title": "内容不得非预期溢出", "appliesWhen": "内容区存在文本、表格、图片或控件", "check": "检查横向滚动、裁切、遮挡和容器越界", "expected": "内容在容器内可读且不遮挡相邻区域", "domTolerancePx": 1, "severity": "high" }
+  ],
+  "outputPolicy": { "onlyReportApplicableRules": true, "maxIssues": 8, "requireLocation": true }
+}

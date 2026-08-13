@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UXChecker 皮肤差异可控案例</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 48px;
+      color: #4d4d4d;
+      background: #f5f6f8;
+      font: 12px/1.5 "Helvetica Neue", "PingFang SC", Tahoma, "Microsoft Yahei", sans-serif;
+    }
+    .demo-panel {
+      width: 560px;
+      padding: 32px;
+      border: 1px solid #d9d9d9;
+      border-radius: 3px;
+      background: #fff;
+    }
+    h1 { margin: 0 0 24px; font-size: 20px; line-height: 28px; }
+    .demo-row { display: flex; align-items: center; gap: 8px; }
+    .skin-primary-button {
+      min-width: 80px;
+      height: 32px;
+      padding: 0 16px;
+      border: 1px solid #1993ff;
+      border-radius: 3px;
+      color: #fff;
+      background: #1993ff;
+      font-family: "Helvetica Neue", "PingFang SC", Tahoma, "Microsoft Yahei", sans-serif;
+      font-size: 12px;
+      line-height: 30px;
+      letter-spacing: 1px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main class="demo-panel" id="skin-difference-page">
+    <h1>皮肤颜色验证</h1>
+    <div class="demo-row" aria-label="操作按钮">
+      <button id="skin-primary" class="skin-primary-button" data-component-family="button">确认提交</button>
+    </div>
+  </main>
+</body>
+</html>

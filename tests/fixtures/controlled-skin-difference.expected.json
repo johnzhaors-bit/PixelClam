@@ -1,0 +1,13 @@
+{
+  "fixture": "controlled-skin-difference.html",
+  "default": {
+    "expectedColorIssues": 0,
+    "expectedIssueCount": 0,
+    "primary": "#1993FF"
+  },
+  "nostalgia": {
+    "expectedColorIssuesAtLeast": 1,
+    "primary": "#24B5B5",
+    "actual": "#1993FF"
+  }
+}

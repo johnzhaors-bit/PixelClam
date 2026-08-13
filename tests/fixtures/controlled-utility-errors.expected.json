@@ -1,0 +1,27 @@
+{
+  "fixture": "controlled-utility-errors.html",
+  "skin": "default",
+  "expectedByRound": {
+    "link": [
+      { "id": "LINK-DECORATION", "target": "#link-bad", "actual": "underline", "expected": "none", "mustContain": ["underline", "none"] },
+      { "id": "LINK-CURSOR", "target": "#link-bad", "actual": "default", "expected": "pointer", "mustContain": ["cursor"] }
+    ],
+    "anchor": [
+      { "id": "ANCHOR-MAPPING", "target": "#anchor-bad", "actual": "2个锚点对应3个内容区", "expected": "一一对应", "mustContain": ["一一对应"] },
+      { "id": "ANCHOR-ORDER", "target": "#anchor-bad", "actual": "配置在概览之前", "expected": "顺序与文档一致", "mustContain": ["顺序"] }
+    ],
+    "back-top": [
+      { "id": "BACKTOP-PLACEMENT", "target": "#back-top-bad", "actual": "左上", "expected": "右下", "mustContain": ["右下"] },
+      { "id": "BACKTOP-ICON", "target": "#back-top-bad", "actual": "向下", "expected": "向上", "mustContain": ["向上"] }
+    ],
+    "empty": [
+      { "id": "EMPTY-ALIGN", "target": "#empty-bad", "actual": "左上对齐", "expected": "居中", "mustContain": ["居中"] },
+      { "id": "EMPTY-ACTION-ORDER", "target": "#empty-bad", "actual": "操作在说明之前", "expected": "操作跟随说明", "mustContain": ["操作", "说明"] }
+    ],
+    "loading": [
+      { "id": "LOADING-SIZE", "target": "#loading-bad", "actual": "32px", "expected": "24px" },
+      { "id": "LOADING-STROKE", "target": "#loading-bad", "actual": "5px", "expected": "2px" }
+    ]
+  },
+  "expectedCleanTargets": ["#link-clean", "#anchor-clean", "#back-top-clean", "#empty-clean", "#loading-clean"]
+}

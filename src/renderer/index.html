@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PixelClam · 花甲</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <button class="icon-button" type="button" aria-label="菜单" title="菜单">
+          <span class="menu-icon" aria-hidden="true"></span>
+        </button>
+        <div class="brand">PixelClam <span class="brand-cn">花甲</span></div>
+        <div class="header-spacer"></div>
+        <div class="app-status" id="appStatus">准备就绪</div>
+        <button class="settings-button" id="modelSettingsButton" type="button">模型设置</button>
+      </header>
+
+      <aside class="history-sidebar">
+        <button class="new-audit-button" id="newAuditButton" type="button">
+          <span aria-hidden="true">＋</span>
+          新增监测
+        </button>
+        <div class="history-heading">
+          <span>监测历史</span>
+          <button class="mini-icon-button" id="refreshHistoryButton" type="button" title="刷新历史">↻</button>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="history-empty">暂无监测记录</div>
+        </div>
+      </aside>
+
+      <section class="browser-toolbar">
+        <div class="browser-actions">
+          <button class="nav-button" id="backButton" type="button" title="后退" disabled>←</button>
+          <button class="nav-button" id="forwardButton" type="button" title="前进" disabled>→</button>
+          <button class="nav-button" id="reloadButton" type="button" title="刷新" disabled>↻</button>
+        </div>
+        <input
+          id="urlInput"
+          class="url-input"
+          placeholder="请输入完整地址，例如 https://example.com"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <label class="skill-field">
+          <span>验收 Skill</span>
+          <select id="skillSelect">
+            <option value="">正在读取...</option>
+          </select>
+        </label>
+        <button class="report-folder-button hidden" id="reportFolderButton" type="button">打开报告文件夹</button>
+        <button class="primary-button" id="primaryActionButton" type="button">进入网页</button>
+      </section>
+
+      <main class="workspace" id="workspace">
+        <section class="home-view" id="homeView">
+          <div class="home-copy">
+            <div class="eyebrow">新建 UX 验收</div>
+            <h1>选择页面采集方式</h1>
+            <p>运行态页面推荐使用 DOM 模式；只有无法访问页面时，再使用截图进行降级验收。</p>
+          </div>
+
+          <div class="mode-grid">
+            <button class="mode-card selected" id="domModeCard" type="button" data-mode="dom">
+              <span class="mode-badge">推荐</span>
+              <span class="mode-icon dom-icon" aria-hidden="true"></span>
+              <strong>DOM 运行态</strong>
+              <span>在上方输入完整地址，进入网页后正常登录和导航，再检测当前业务页面。</span>
+              <span class="mode-foot">精确采集 CSS px、DOM、computed style 与元素关系</span>
+            </button>
+
+            <button class="mode-card" id="imageModeCard" type="button" data-mode="image">
+              <span class="mode-badge quiet">降级模式</span>
+              <span class="mode-icon image-icon" aria-hidden="true"></span>
+              <strong>上传页面截图</strong>
+              <span id="imageModeDescription">适合无法访问运行环境的页面，按截图视觉容差进行验收。</span>
+              <span class="mode-foot">支持 PNG、JPG；建议使用未缩放的 1:1 清晰截图</span>
+            </button>
+          </div>
+
+          <div class="home-notice" id="homeNotice">
+            <span class="notice-dot"></span>
+            <span id="homeNoticeText">选择皮肤后将自动验收该皮肤下的全部组件，每轮只发送一份组件规范。</span>
+          </div>
+        </section>
+
+        <section class="browser-placeholder hidden" id="browserPlaceholder">
+          <div class="placeholder-mark"></div>
+          <strong>内置浏览器已打开</strong>
+          <span>在页面中完成登录和导航，找到目标业务页后点击“检测当前页”。</span>
+        </section>
+
+        <section class="report-placeholder hidden" id="reportPlaceholder">
+          <strong>正在打开验收报告</strong>
+          <span>报告会显示在当前工作区，左侧历史记录将保持可用。</span>
+        </section>
+      </main>
+
+      <section class="audit-overlay hidden" id="auditOverlay" aria-live="polite">
+        <div class="audit-progress-card">
+          <div class="progress-visual">
+            <div class="orbit orbit-one"></div>
+            <div class="orbit orbit-two"></div>
+            <div class="progress-core"><span>UX</span></div>
+          </div>
+          <div class="progress-copy">
+            <div class="eyebrow">正在检测当前页面</div>
+            <h2 id="progressTitle">采集运行态页面</h2>
+            <p id="progressMessage">正在锁定页面、提取 DOM 与视觉证据，请稍候。</p>
+            <div class="progress-track"><span id="progressBar"></span></div>
+            <div class="progress-grid">
+              <div class="progress-column">
+                <div class="progress-section-title">执行步骤</div>
+                <ol class="progress-steps" id="progressSteps"></ol>
+              </div>
+              <div class="progress-column">
+                <div class="progress-section-title">验收轮次</div>
+                <div class="round-list" id="roundList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-overlay hidden" id="modelSettingsOverlay" role="dialog" aria-modal="true" aria-labelledby="modelSettingsTitle">
+        <form class="settings-panel" id="modelSettingsForm">
+          <div class="settings-head">
+            <div>
+              <div class="eyebrow">Kimi / OpenAI 兼容接口</div>
+              <h2 id="modelSettingsTitle">模型设置</h2>
+            </div>
+            <button class="settings-close" id="modelSettingsClose" type="button" aria-label="关闭">×</button>
+          </div>
+          <p class="settings-help">普通用户只需填写 API Key。高级用户可以修改接口地址和模型名称，配置保存在本机文档目录。</p>
+          <label class="settings-check"><input id="modelEnabled" type="checkbox" /> 启用大模型验收</label>
+          <label class="settings-field">
+            <span>接口协议</span>
+            <select id="modelProvider">
+              <option value="openai-compatible">OpenAI 兼容接口</option>
+              <option value="anthropic-compatible">Anthropic 兼容接口</option>
+            </select>
+          </label>
+          <label class="settings-field"><span>API 地址</span><input id="modelBaseUrl" type="url" spellcheck="false" /></label>
+          <label class="settings-field"><span>模型名称</span><input id="modelName" type="text" spellcheck="false" /></label>
+          <label class="settings-field">
+            <span>API Key</span>
+            <span class="secret-field"><input id="modelApiKey" type="password" autocomplete="off" spellcheck="false" /><button id="toggleModelKey" type="button">显示</button></span>
+          </label>
+          <label class="settings-field"><span>超时时间（秒）</span><input id="modelTimeout" type="number" min="180" max="3600" step="30" /></label>
+          <div class="settings-result" id="modelTestResult">尚未测试连接</div>
+          <div class="settings-actions secondary-actions">
+            <button id="resetKimiDefaults" type="button">恢复 Kimi 默认值</button>
+            <button id="openModelConfigFolder" type="button">打开本地配置文件夹</button>
+          </div>
+          <div class="settings-actions">
+            <button id="testModelConnection" type="button">测试连接</button>
+            <button class="primary-button" type="submit">保存配置</button>
+          </div>
+        </form>
+      </section>
+
+      <div class="toast hidden" id="toast"></div>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>
