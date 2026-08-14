@@ -5,5 +5,10 @@
   "model": "kimi-k3",
   "apiKey": "",
   "temperature": 1,
-  "timeoutMs": 300000
+  "timeoutMs": 300000,
+  "fastMode": {
+    "contextWindowTokens": 262144,
+    "reservedOutputTokens": 6000,
+    "safetyRatio": 0.15
+  }
 }

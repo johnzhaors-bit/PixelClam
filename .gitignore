@@ -1,7 +1,9 @@
 # Dependencies and build outputs
 node_modules/
 dist/
+release-artifacts/
 .build-test-assets/
+.release-audit-dir
 .tools/
 
 # User-owned model credentials, Skills and audit evidence
@@ -13,6 +15,7 @@ user-data/skills/*
 user-data/runs/
 user-data/reports/
 user-data/.disabled-skills/
+user-data/skill-source-backups/
 user-data/config/.previous-workspace-imported-v1
 runs/
 reports/

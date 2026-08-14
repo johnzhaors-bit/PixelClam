@@ -84,19 +84,25 @@ npm test
 npm run bootstrap:refresh
 ```
 
-构建示例：
+双轨构建：
 
 ```bash
-npm run dist:portable:mac
-npm run dist:portable:win
-npm run dist:portable:linux
+npm run dist:release:all
 ```
 
-公司内部构建如不需要示例 Skill：
+- `release-artifacts/public/`：公开包，不含 Key 和私有 Skill，可以上传 GitHub。
+- `release-artifacts/internal/`：内部包，包含本机模型配置与本机私有 Skill，只能用于企业内部发布。
+
+也可以只构建其中一种：
 
 ```bash
-UXCHECKER_BUNDLE_EXAMPLE_SKILL=0 npm run bootstrap:refresh
+npm run dist:release:public
+npm run dist:release:internal
 ```
+
+正式发布前必须阅读并执行 [打包与发布说明](docs/PACKAGING.md)，其中包含防止 Key、私有 Skill 和运行证据进入安装包的自动检查。
+
+计划中的“完整 DOM + 全量规范动态分包”方案见 [快速验收模式设计](docs/FAST_MODE_DESIGN.md)。
 
 ## 隐私与安全
 

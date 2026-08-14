@@ -3,6 +3,7 @@
   const state = {
     view: 'home',
     mode: 'dom',
+    auditStrategy: 'deep',
     running: false,
     skills: [],
     reports: [],
@@ -44,6 +45,7 @@
     reloadButton: document.getElementById('reloadButton'),
     urlInput: document.getElementById('urlInput'),
     skillSelect: document.getElementById('skillSelect'),
+    auditStrategySelect: document.getElementById('auditStrategySelect'),
     reportFolderButton: document.getElementById('reportFolderButton'),
     primaryActionButton: document.getElementById('primaryActionButton'),
     homeView: document.getElementById('homeView'),
@@ -358,9 +360,13 @@
     el.domModeCard.classList.toggle('selected', mode === 'dom');
     el.imageModeCard.classList.toggle('selected', mode === 'image');
     if (mode === 'dom') {
+      el.auditStrategySelect.disabled = false;
       el.homeNoticeText.textContent = '选择皮肤后将自动验收该皮肤下的全部组件；DOM 登录状态保存在本机。';
       el.urlInput.disabled = false;
     } else {
+      state.auditStrategy = 'deep';
+      el.auditStrategySelect.value = 'deep';
+      el.auditStrategySelect.disabled = true;
       el.homeNoticeText.textContent = state.selectedImageName
         ? `已选择图片：${state.selectedImageName}`
         : '截图模式按视觉证据验收，尺寸与间距采用截图容差。';
@@ -462,6 +468,7 @@
       beginProgress('dom');
       const result = await api.auditEmbeddedCurrentPage({
         skillId: state.selectedSkillId,
+        auditStrategy: state.auditStrategy,
         requestedUrl
       });
       if (result?.reportPath) state.reportPath = result.reportPath;
@@ -619,6 +626,13 @@
     state.selectedSkillId = selected.id;
     el.appStatus.textContent = `当前验收皮肤：${selected.skinName || selected.name}`;
     updatePrimaryAction();
+  });
+  el.auditStrategySelect.addEventListener('change', () => {
+    state.auditStrategy = el.auditStrategySelect.value === 'fast' ? 'fast' : 'deep';
+    el.homeNoticeText.textContent = state.auditStrategy === 'fast'
+      ? '快速模式不做组件盘点，将完整 DOM 与当前皮肤全部规范按模型上下文动态分包。'
+      : '深度模式先盘点页面组件，再逐组件发送独立规范，准确率优先。';
+    el.appStatus.textContent = state.auditStrategy === 'fast' ? '已选择快速模式' : '已选择深度模式';
   });
   el.primaryActionButton.addEventListener('click', () => {
     if (state.view === 'home') {

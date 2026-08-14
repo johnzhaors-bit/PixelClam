@@ -18,12 +18,17 @@
     "model:external": "node scripts/switch-model-config.mjs external",
     "model:internal": "node scripts/switch-model-config.mjs internal",
     "bootstrap:refresh": "node scripts/refresh-build-bootstrap.mjs",
+    "release:check": "node scripts/check-release-safety.mjs",
+    "release:checksums": "node scripts/generate-release-checksums.mjs",
+    "dist:release:public": "node scripts/build-release-variant.mjs public",
+    "dist:release:internal": "node scripts/build-release-variant.mjs internal",
+    "dist:release:all": "npm run dist:release:internal && npm run dist:release:public",
     "dist:win:test": "electron-builder --win portable --x64",
     "dist:win:setup": "electron-builder --win nsis --x64",
     "dist:portable:win": "npm run bootstrap:refresh && electron-builder --win portable --x64",
     "dist:portable:mac": "electron-builder --mac zip --arm64",
     "dist:portable:linux": "electron-builder --linux AppImage --x64",
-    "dist:portable:all": "npm run dist:portable:win && npm run dist:portable:mac && npm run dist:portable:linux"
+    "dist:portable:all": "npm run release:check && npm run dist:portable:win && npm run dist:portable:mac && npm run dist:portable:linux && npm run release:checksums"
   },
   "dependencies": {
     "playwright": "^1.44.0"
@@ -33,7 +38,7 @@
     "electron-builder": "^26.0.12"
   },
   "build": {
-    "appId": "com.uxchecker.desktop",
+    "appId": "com.pixelclam.desktop",
     "productName": "PixelClam",
     "asar": true,
     "directories": {

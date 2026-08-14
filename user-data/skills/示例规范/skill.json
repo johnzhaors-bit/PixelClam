@@ -3,6 +3,11 @@
   "name": "示例规范",
   "groupName": "示例规范",
   "visibleSkins": ["default"],
+  "audit": {
+    "fastMode": {
+      "reservedOutputTokens": 4000
+    }
+  },
   "version": "1.0.0",
   "description": "开源示例 Skill：使用常见 Web 基线验收布局与基础组件，不代表任何品牌官方规范。",
   "entry": "SKILL.md",

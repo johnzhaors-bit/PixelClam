@@ -524,6 +524,7 @@ async function readSkillManifest(skillDir) {
     name: String(manifest.name || fallbackName),
     groupName: String(manifest.groupName || manifest.name || fallbackName),
     visibleSkins: Array.isArray(manifest.visibleSkins) ? manifest.visibleSkins.map((item) => String(item)) : [],
+    audit: manifest.audit && typeof manifest.audit === 'object' ? manifest.audit : {},
     version: String(manifest.version || fallbackVersion || '0.0.0'),
     description: String(manifest.description || fallbackDescription),
     entry,
@@ -1461,13 +1462,14 @@ async function discoverCleanComponentStandards(skill) {
   return standards;
 }
 
-async function runCleanElectronAudit({ mode, skillId, imagePath = '', webContents = null, expectedUrl = '' }) {
+async function runCleanElectronAudit({ mode, skillId, imagePath = '', webContents = null, expectedUrl = '', auditStrategy = 'deep' }) {
   const appRoot = path.join(__dirname, '..');
   const skill = await resolveSkillDir(skillId);
   const standards = await discoverCleanComponentStandards(skill);
   const componentFamilies = standards.map((item) => item.componentFamily);
   const modelClient = await import(pathToFileURL(path.join(appRoot, 'src', 'main', 'model-client.mjs')).href);
   const componentAudit = await import(pathToFileURL(path.join(appRoot, 'src', 'main', 'component-audit.mjs')).href);
+  const fastComponentAudit = await import(pathToFileURL(path.join(appRoot, 'src', 'main', 'fast-component-audit.mjs')).href);
   const layoutAudit = await import(pathToFileURL(path.join(appRoot, 'src', 'main', 'layout-audit.mjs')).href);
   const layoutStandardCandidates = [
     path.join(skill.path, 'standards', 'layout', 'layout-audit-pack-v1.json'),
@@ -1483,8 +1485,9 @@ async function runCleanElectronAudit({ mode, skillId, imagePath = '', webContent
   const auditLogPath = startAuditLog(runDir, { mode, source: mode === 'image' ? 'uploaded-image' : 'embedded-browser-clean' });
   const auditPlanPath = path.join(runDir, 'audit-plan.json');
   await fsp.writeFile(auditPlanPath, JSON.stringify({
-    schemaVersion: 'page-audit-plan-v2',
+    schemaVersion: 'page-audit-plan-v3',
     mode,
+    auditStrategy,
     skinId: skill.skinId || 'default',
     createdAt: new Date().toISOString(),
     steps: [
@@ -1492,7 +1495,16 @@ async function runCleanElectronAudit({ mode, skillId, imagePath = '', webContent
       ...standards.map((item) => ({ auditFamily: 'component', ...item, status: 'pending' }))
     ]
   }, null, 2), 'utf8');
-  send('audit:event', { phase: 'run:init', message: `开始页面组件盘点与独立验收；日志：${auditLogPath}`, runDir, runId, auditLogPath });
+  send('audit:event', {
+    phase: 'run:init',
+    message: auditStrategy === 'fast'
+      ? `开始快速验收：完整页面证据 + 全部组件规范动态分包；日志：${auditLogPath}`
+      : `开始深度验收：组件盘点后逐组件独立验收；日志：${auditLogPath}`,
+    runDir,
+    runId,
+    auditLogPath,
+    auditStrategy
+  });
 
   let evidencePath;
   let screenshotPath;
@@ -1570,7 +1582,7 @@ async function runCleanElectronAudit({ mode, skillId, imagePath = '', webContent
   }
 
   let auditStandards = standards;
-  if (mode === 'dom') {
+  if (mode === 'dom' && auditStrategy !== 'fast') {
     const originClassifier = await import(pathToFileURL(path.join(appRoot, 'src', 'main', 'dom-component-origin.mjs')).href);
     send('audit:event', { phase: 'origin:start', message: '盘点当前页面实际出现的组件族' });
     originResult = await originClassifier.classifyDomComponentOrigins({
@@ -1599,9 +1611,47 @@ async function runCleanElectronAudit({ mode, skillId, imagePath = '', webContent
     });
   }
 
-  const componentRuns = [];
+  let componentRuns = [];
   const failedRuns = [];
-  for (const standardEntry of auditStandards) {
+  let fastRun = null;
+  if (auditStrategy === 'fast') {
+    if (mode !== 'dom') throw new Error('快速模式第一期仅支持 DOM，请切换到深度模式执行图片验收');
+    fastRun = await fastComponentAudit.auditComponentsFast({
+      mode,
+      evidencePath,
+      standards,
+      config,
+      fastMode: skill.audit?.fastMode || {},
+      artifactDir: runDir,
+      fetchImpl: electronFetch,
+      onProgress: (event) => send('audit:event', event)
+    });
+    componentRuns = fastRun.componentRuns;
+    failedRuns.push(...fastRun.failures.map((failure) => ({
+      componentFamily: failure.components.join(','),
+      standardPath: '',
+      message: failure.error
+    })));
+    const plan = JSON.parse(await fsp.readFile(auditPlanPath, 'utf8'));
+    for (const step of plan.steps.filter((item) => item.auditFamily === 'component')) {
+      const run = componentRuns.find((item) => item.componentFamily === step.componentFamily);
+      if (run) {
+        step.status = 'completed-fast';
+        step.issueCount = (run.result.results || []).reduce((sum, item) => sum + (item.issues?.length || 0), 0);
+      } else {
+        step.status = 'failed';
+        step.error = '快速模式未获得该组件的可确认结果';
+      }
+    }
+    plan.fastMode = {
+      completedBatches: fastRun.completedBatches.length,
+      failedBatches: fastRun.failures.length,
+      fixedPrefixTokens: fastRun.packing.fixedPrefixTokens,
+      contextWindowTokens: fastRun.packing.budget.contextWindowTokens,
+      standardBudget: fastRun.packing.standardBudget
+    };
+    await fsp.writeFile(auditPlanPath, JSON.stringify(plan, null, 2), 'utf8');
+  } else for (const standardEntry of auditStandards) {
     const { componentFamily, standardPath } = standardEntry;
     const roundId = `component-${componentFamily}`;
     send('audit:event', {
@@ -1691,9 +1741,13 @@ async function runCleanElectronAudit({ mode, skillId, imagePath = '', webContent
     await copyIfExists(path.join(runDir, 'dom-component-inventory.json'), path.join(reportPackage.evidenceDir, 'dom-component-inventory.json'));
   }
   for (const run of componentRuns) {
-    await copyIfExists(run.resultPath, path.join(reportPackage.evidenceDir, `${run.componentFamily}-result.json`));
-    await copyIfExists(run.requestManifestPath, path.join(reportPackage.evidenceDir, `${run.componentFamily}-request-manifest.json`));
-    await copyIfExists(run.rawResponsePath, path.join(reportPackage.evidenceDir, `${run.componentFamily}-raw-response.json`));
+    if (run.resultPath) await copyIfExists(run.resultPath, path.join(reportPackage.evidenceDir, `${run.componentFamily}-result.json`));
+    if (run.requestManifestPath) await copyIfExists(run.requestManifestPath, path.join(reportPackage.evidenceDir, `${run.componentFamily}-request-manifest.json`));
+    if (run.rawResponsePath) await copyIfExists(run.rawResponsePath, path.join(reportPackage.evidenceDir, `${run.componentFamily}-raw-response.json`));
+  }
+  for (const batch of fastRun?.completedBatches || []) {
+    if (batch.manifestPath) await copyIfExists(batch.manifestPath, path.join(reportPackage.evidenceDir, path.basename(batch.manifestPath)));
+    if (batch.rawResponsePath) await copyIfExists(batch.rawResponsePath, path.join(reportPackage.evidenceDir, path.basename(batch.rawResponsePath)));
   }
   if (layoutRun) {
     await copyIfExists(layoutRun.resultPath, path.join(reportPackage.evidenceDir, 'layout-result.json'));
@@ -1707,21 +1761,27 @@ async function runCleanElectronAudit({ mode, skillId, imagePath = '', webContent
     title: `${targetName} UX ${mode === 'image' ? '图片' : 'DOM'}验收报告`,
     targetName,
     targetImage: reportPackage.packaged.screenshotPath || screenshotPath,
-    mode: mode === 'image' ? '检查方式：页面图片 + 单组件规范' : '检查方式：登录后冻结 DOM + 单组件规范',
+    mode: mode === 'image'
+      ? '检查方式：页面图片 + 单组件规范'
+      : auditStrategy === 'fast'
+        ? '检查方式：登录后冻结 DOM + 全量组件规范动态分包（快速模式）'
+        : '检查方式：登录后冻结 DOM + 单组件规范（深度模式）',
     standard: `公共布局规范 + 皮肤：${skill.skinName || skill.skinId || skill.name}；组件：${componentFamilies.join('、')}`,
     score,
     stars,
-    summary: `公共布局验收 ${layoutRun ? '完成' : '失败'}；当前 Skill 共加载 ${standards.length} 个组件规范，页面未出现 ${originResult?.skippedAbsentFamilies?.length || 0} 个，组件完成 ${componentRuns.length} 个、失败 ${failedRuns.length} 个，共发现 ${issues.length} 条明确问题。`,
+    summary: `公共布局验收 ${layoutRun ? '完成' : '失败'}；${auditStrategy === 'fast' ? `快速模式动态执行 ${fastRun?.completedBatches?.length || 0} 批` : `页面未出现 ${originResult?.skippedAbsentFamilies?.length || 0} 个`}；当前 Skill 共加载 ${standards.length} 个组件规范，组件完成 ${componentRuns.length} 个、失败 ${failedRuns.length} 个，共发现 ${issues.length} 条明确问题。`,
     metrics: [
       { label: '总分', value: String(score) },
       { label: '问题数', value: String(issues.length) },
       { label: '严重 / 中等 / 轻微', value: `${scoring.counts.severe} / ${scoring.counts.medium} / ${scoring.counts.minor}` },
       { label: '质量扣分', value: `-${scoring.penalty}` },
       { label: '证据模式', value: mode === 'image' ? '图片' : 'DOM' },
+      { label: '检测策略', value: auditStrategy === 'fast' ? '快速模式' : '深度模式' },
       { label: '组件族', value: String(componentFamilies.length) }
       ,{ label: '布局问题', value: String(layoutRun?.result?.issues?.length || 0) }
       ,{ label: '页面未出现', value: String(originResult?.skippedAbsentFamilies?.length || 0) }
       ,{ label: '执行失败', value: String(failedRuns.length) }
+      ,...(auditStrategy === 'fast' ? [{ label: '快速批次', value: String(fastRun?.completedBatches?.length || 0) }] : [])
     ],
     viewport,
     issues,
@@ -1756,6 +1816,12 @@ async function runCleanElectronAudit({ mode, skillId, imagePath = '', webContent
       ,layoutResult: layoutRun?.resultPath || null
       ,layoutFailure
       ,skippedAbsentFamilies: originResult?.skippedAbsentFamilies || []
+      ,auditStrategy
+      ,fastMode: fastRun ? {
+        completedBatches: fastRun.completedBatches.length,
+        failures: fastRun.failures,
+        packing: fastRun.packing
+      } : null
     }
   };
   const reportDataPath = path.join(reportPackage.evidenceDir, 'report-data.json');
@@ -1790,7 +1856,7 @@ ipcMain.handle('image:select', async () => {
 });
 
 ipcMain.handle('image:audit', async (_event, options = {}) => {
-  return runCleanElectronAudit({ mode: 'image', skillId: options.skillId, imagePath: options.imagePath });
+  return runCleanElectronAudit({ mode: 'image', skillId: options.skillId, imagePath: options.imagePath, auditStrategy: 'deep' });
   /* legacy implementation retained temporarily for migration comparison */
   const sourcePath = path.resolve(String(options.imagePath || ''));
   if (!sourcePath || !fs.existsSync(sourcePath)) throw new Error('请选择有效的页面截图');
@@ -2143,7 +2209,8 @@ ipcMain.handle('model:loadConfig', async () => {
 ipcMain.handle('model:saveConfig', async (_event, config) => {
   const appRoot = path.join(__dirname, '..');
   const modelClient = await import(pathToFileURL(path.join(appRoot, 'src', 'main', 'model-client.mjs')).href);
-  const saved = await modelClient.saveModelConfig(modelConfigPath(), config || {});
+  const current = await modelClient.loadModelConfig(modelConfigPath());
+  const saved = await modelClient.saveModelConfig(modelConfigPath(), { ...current, ...(config || {}) });
   return { ok: true, config: saved };
 });
 
@@ -2234,6 +2301,7 @@ ipcMain.handle('embedded:auditCurrent', async (_event, options = {}) => {
   return runCleanElectronAudit({
     mode: 'dom',
     skillId: options.skillId,
+    auditStrategy: options.auditStrategy === 'fast' ? 'fast' : 'deep',
     webContents: auditView.webContents,
     expectedUrl: requestedUrl || loadedUrl
   });

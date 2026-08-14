@@ -51,6 +51,13 @@
             <option value="">正在读取...</option>
           </select>
         </label>
+        <label class="strategy-field">
+          <span>检测模式</span>
+          <select id="auditStrategySelect">
+            <option value="deep">深度模式</option>
+            <option value="fast">快速模式</option>
+          </select>
+        </label>
         <button class="report-folder-button hidden" id="reportFolderButton" type="button">打开报告文件夹</button>
         <button class="primary-button" id="primaryActionButton" type="button">进入网页</button>
       </section>
@@ -83,7 +90,7 @@
 
           <div class="home-notice" id="homeNotice">
             <span class="notice-dot"></span>
-            <span id="homeNoticeText">选择皮肤后将自动验收该皮肤下的全部组件，每轮只发送一份组件规范。</span>
+            <span id="homeNoticeText">深度模式会逐组件验收；快速模式会按模型上下文动态分包全部规范。</span>
           </div>
         </section>
 

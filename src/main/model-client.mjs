@@ -11,7 +11,12 @@ const DEFAULT_CONFIG = {
   candidateModels: [],
   candidateApiKeys: [],
   temperature: 0.6,
-  timeoutMs: 300000
+  timeoutMs: 300000,
+  fastMode: {
+    contextWindowTokens: 262144,
+    reservedOutputTokens: 6000,
+    safetyRatio: 0.15
+  }
 };
 
 function normalizeBaseUrl(value) {
@@ -117,7 +122,11 @@ function normalizeModelConfig(config = {}) {
       ? config.candidateApiKeys.map((value) => String(value || '').trim()).filter(Boolean)
       : [],
     temperature: Number.isFinite(Number(config.temperature)) ? Number(config.temperature) : DEFAULT_CONFIG.temperature,
-    timeoutMs: Number.isFinite(timeoutMs) ? Math.max(180000, timeoutMs) : DEFAULT_CONFIG.timeoutMs
+    timeoutMs: Number.isFinite(timeoutMs) ? Math.max(180000, timeoutMs) : DEFAULT_CONFIG.timeoutMs,
+    fastMode: {
+      ...DEFAULT_CONFIG.fastMode,
+      ...(config.fastMode && typeof config.fastMode === 'object' ? config.fastMode : {})
+    }
   };
 }
 
